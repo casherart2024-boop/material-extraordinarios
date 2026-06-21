@@ -96,6 +96,7 @@
 
     <div class="nav no-print">
         <button onclick="showSection('generador')" class="active" id="nav-generador">🎲 Ejercicios</button>
+        <button onclick="showSection('lecturas')" id="nav-lecturas">📖 Lecturas</button>
         <button onclick="showSection('diagnostico')" id="nav-diagnostico">🔍 Diagnóstico</button>
         <button onclick="showSection('simulador')" id="nav-simulador">⏱️ Simulador</button>
         <button onclick="showSection('hojas')" id="nav-hojas">📄 Hojas de Trabajo</button>
@@ -109,6 +110,36 @@
             <input type="text" id="nombre-alumno" placeholder="Escribe tu nombre completo" style="width:100%; margin-top:8px;">
         </div>
 
+
+        <!-- SECCIÓN 5: LECTURAS -->
+        <div class="section" id="sec-lecturas">
+            <div class="card">
+                <h2>📖 Lecturas de Comprensión</h2>
+                <p>Lecturas con preguntas: cuentos, fábulas y textos narrativos.</p><br>
+                <div class="grid-2">
+                    <div>
+                        <label><strong>Tipo de texto:</strong></label><br>
+                        <select id="lect-tipo">
+                            <option value="comprension">Lectura de comprensión</option>
+                            <option value="cuento">Cuento</option>
+                            <option value="fabula">Fábula</option>
+                            <option value="narrativo">Texto narrativo</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label><strong>Dificultad:</strong></label><br>
+                        <select id="lect-dificultad">
+                            <option value="1">1° Secundaria</option>
+                            <option value="2">2° Secundaria</option>
+                            <option value="3">3° Secundaria</option>
+                        </select>
+                    </div>
+                </div><br>
+                <button class="btn" onclick="mostrarLectura()">📖 Generar Lectura</button>
+                <button class="btn btn-success" onclick="window.print()">🖨️ Imprimir</button>
+            </div>
+            <div id="lecturas-output"></div>
+        </div>
 
         <!-- SECCIÓN 1: GENERADOR DE EJERCICIOS -->
         <div class="section active" id="sec-generador">
@@ -269,7 +300,7 @@ let modoActual = "alumno"; // alumno | profesor
 // ============ TEMAS POR MATERIA Y GRADO ============
 const temas = {
     matematicas: {
-        1: ["Números enteros y operaciones", "Fracciones y decimales", "Proporcionalidad", "Ecuaciones lineales", "Geometría básica", "Perímetro y área", "Estadística básica"],
+        1: ["Números enteros y operaciones", "Fracciones y decimales", "Proporcionalidad", "Proporcionalidad directa e inversa", "Problemas con operaciones de fracciones", "Ecuaciones lineales", "Geometría básica", "Perímetro y área", "Estadística básica", "Moda, media y mediana"],
         2: ["Productos notables", "Factorización", "Ecuaciones cuadráticas", "Sistemas de ecuaciones", "Teorema de Pitágoras", "Volumen de cuerpos", "Probabilidad"],
         3: ["Funciones lineales", "Funciones cuadráticas", "Trigonometría", "Semejanza y congruencia", "Estadística y probabilidad", "Sucesiones", "Expresiones algebraicas"]
     },
@@ -449,6 +480,60 @@ const ejerciciosDB = {
             {p: "¿Cuánto es el 150% de 80?", o: ["120", "100", "130", "160"], r: 0},
             {p: "5 trabajadores pintan una casa en 8 días. ¿En cuántos días la pintan 10?", o: ["4 días", "16 días", "2 días", "5 días"], r: 0},
             {p: "Si 2 litros cuestan $36, ¿cuánto cuestan 7 litros?", o: ["$126", "$72", "$108", "$252"], r: 0}
+        ],
+        "Proporcionalidad directa e inversa": [
+            {p: "Si 5 lápices cuestan $30, ¿cuánto cuestan 12?", o: ["$72", "$60", "$84", "$36"], r: 0},
+            {p: "Si 8 metros de tela cuestan $240, ¿cuánto cuestan 3 metros?", o: ["$90", "$80", "$120", "$60"], r: 0},
+            {p: "3 pintores terminan un trabajo en 12 días. ¿En cuántos días lo hacen 6 pintores?", o: ["6 días", "24 días", "4 días", "3 días"], r: 0},
+            {p: "Si 2 máquinas llenan 100 botellas en 5 horas, ¿cuánto tardan 4 máquinas?", o: ["2.5 horas", "10 horas", "1 hora", "5 horas"], r: 0},
+            {p: "Si a 60 km/h tardo 3 horas, ¿cuánto tardo a 90 km/h?", o: ["2 horas", "4.5 horas", "1.5 horas", "3 horas"], r: 0},
+            {p: "Un grifo llena un tanque en 6 horas. ¿En cuánto lo llenan 3 grifos iguales?", o: ["2 horas", "18 horas", "3 horas", "1 hora"], r: 0},
+            {p: "Si 4 kg de manzanas cuestan $60, ¿cuántos kg compro con $150?", o: ["10 kg", "8 kg", "12 kg", "6 kg"], r: 0},
+            {p: "¿Cuál es proporcionalidad DIRECTA?", o: ["Más cantidad = más precio", "Más obreros = menos tiempo", "Más velocidad = menos tiempo", "Más grifos = menos horas"], r: 0},
+            {p: "¿Cuál es proporcionalidad INVERSA?", o: ["Más trabajadores = menos días", "Más kg = más precio", "Más metros = más costo", "Más litros = más peso"], r: 0},
+            {p: "Si 10 obreros hacen un muro en 4 días, ¿cuántos obreros necesito para hacerlo en 2 días?", o: ["20", "5", "8", "40"], r: 0},
+            {p: "6 albañiles construyen una barda en 10 días. ¿Cuánto tardan 15 albañiles?", o: ["4 días", "25 días", "6 días", "2.5 días"], r: 0},
+            {p: "Si 12 galletas cuestan $48, ¿cuánto cuestan 5?", o: ["$20", "$15", "$24", "$30"], r: 0},
+            {p: "Un coche a 80 km/h tarda 6 horas. ¿A qué velocidad debe ir para tardar 4 horas?", o: ["120 km/h", "100 km/h", "160 km/h", "90 km/h"], r: 0},
+            {p: "Si 3 personas comen un pastel en 4 días, ¿en cuántos días se lo comen 6 personas?", o: ["2 días", "8 días", "1 día", "12 días"], r: 0},
+            {p: "Identifica: 'Más horas de estudio = mejor calificación' es:", o: ["Proporcionalidad directa", "Proporcionalidad inversa", "No es proporcional", "Constante"], r: 0}
+        ],
+        "Problemas con operaciones de fracciones": [
+            {p: "Juan comió 1/4 de pizza y María 2/4. ¿Cuánto comieron entre los dos?", o: ["3/4", "3/8", "1/2", "2/4"], r: 0},
+            {p: "Tengo 3/4 de litro de leche y uso 1/3. ¿Cuánto me queda?", o: ["5/12", "2/4", "1/4", "2/3"], r: 0},
+            {p: "Un terreno mide 2/3 de hectárea. Si vendo la mitad, ¿cuánto vendí?", o: ["1/3 de hectárea", "1/6 de hectárea", "2/6 de hectárea", "1/2 hectárea"], r: 0},
+            {p: "Si una receta necesita 3/4 de taza de azúcar y hago el doble, ¿cuánto necesito?", o: ["6/4 = 1 1/2 tazas", "3/8 de taza", "6/8 de taza", "3/2 tazas"], r: 0},
+            {p: "Tengo $600. Gasto 1/3 en comida y 1/4 en transporte. ¿Cuánto gasté en total?", o: ["$350", "$300", "$200", "$450"], r: 0},
+            {p: "Una barda mide 5/6 de metro. Si le agrego 1/3 de metro, ¿cuánto mide ahora?", o: ["7/6 = 1 1/6 metros", "6/9 metros", "5/9 metros", "2 metros"], r: 0},
+            {p: "Si camino 2/5 de km y luego 1/2 km, ¿cuánto caminé?", o: ["9/10 km", "3/7 km", "3/10 km", "1 km"], r: 0},
+            {p: "Tengo 4/5 de metro de listón. Necesito cortar 3 pedazos iguales. ¿Cuánto mide cada uno?", o: ["4/15 de metro", "12/5 metros", "4/8 de metro", "1/5 metro"], r: 0},
+            {p: "Un tanque tiene 7/8 de su capacidad. Se usa 1/4 del total. ¿Cuánto queda?", o: ["5/8", "6/8", "3/8", "7/4"], r: 0},
+            {p: "Si 2/3 de los alumnos aprobaron y hay 36 alumnos, ¿cuántos aprobaron?", o: ["24", "12", "18", "30"], r: 0},
+            {p: "María recorre 3/4 km y Pedro 5/6 km. ¿Quién recorrió más y por cuánto?", o: ["Pedro, por 1/12 km", "María, por 1/12 km", "Igual", "Pedro, por 1/4 km"], r: 0},
+            {p: "Si un medicamento se toma cada 1/2 día, ¿cuántas dosis son en 5 días?", o: ["10 dosis", "5 dosis", "2.5 dosis", "15 dosis"], r: 0},
+            {p: "Tengo 5/6 de pastel. Reparto en partes iguales entre 5 personas. ¿Cuánto le toca a cada uno?", o: ["1/6", "5/30", "1/5", "5/6"], r: 0},
+            {p: "Si una jarra tiene 3/4 de litro y otra 2/3, ¿cuánto hay en total?", o: ["17/12 = 1 5/12 litros", "5/7 litros", "5/12 litros", "6/7 litros"], r: 0},
+            {p: "Un obrero hace 2/5 del trabajo el lunes y 1/4 el martes. ¿Cuánto lleva?", o: ["13/20", "3/9", "3/20", "1/2"], r: 0}
+        ],
+        "Moda, media y mediana": [
+            {p: "Califica: 8, 7, 9, 8, 8, 6, 10. ¿Cuál es la MODA?", o: ["8", "7", "9", "10"], r: 0},
+            {p: "Datos: 5, 3, 8, 3, 6, 3, 9. ¿Cuál es la moda?", o: ["3", "5", "6", "9"], r: 0},
+            {p: "Califica: 7, 8, 9, 6, 10. ¿Cuál es la MEDIA (promedio)?", o: ["8", "7", "9", "7.5"], r: 0},
+            {p: "Datos: 4, 6, 8, 10, 12. ¿Cuál es la media?", o: ["8", "6", "10", "7"], r: 0},
+            {p: "Datos ordenados: 3, 5, 7, 9, 11. ¿Cuál es la MEDIANA?", o: ["7", "5", "9", "3"], r: 0},
+            {p: "Datos: 2, 4, 6, 8. ¿Cuál es la mediana?", o: ["5 (promedio de 4 y 6)", "4", "6", "2"], r: 0},
+            {p: "¿Qué es la MODA?", o: ["El dato que más se repite", "El promedio", "El dato del medio", "El mayor"], r: 0},
+            {p: "¿Qué es la MEDIA?", o: ["La suma de datos entre cantidad de datos", "El dato que se repite", "El del medio", "El mayor menos el menor"], r: 0},
+            {p: "¿Qué es la MEDIANA?", o: ["El dato central al ordenar", "El promedio", "El que se repite", "El rango"], r: 0},
+            {p: "Edades: 12, 14, 12, 15, 13, 12, 16. Moda:", o: ["12", "14", "15", "13"], r: 0},
+            {p: "Edades: 12, 14, 12, 15, 13, 12, 16. Media:", o: ["13.4", "12", "14", "15"], r: 0},
+            {p: "Edades: 12, 12, 12, 13, 14, 15, 16. Mediana:", o: ["13", "12", "14", "15"], r: 0},
+            {p: "Datos: 5, 5, 8, 8, 10. ¿Cuántas modas hay?", o: ["2 (bimodal: 5 y 8)", "1", "0", "3"], r: 0},
+            {p: "Si mis calificaciones son 7, 8, 9, 8, 8, mi promedio es:", o: ["8", "7.5", "9", "8.5"], r: 0},
+            {p: "Para sacar promedio de 8 con calificaciones 7, 9, 6, ¿cuánto necesito en el 4° parcial?", o: ["10", "8", "9", "7"], r: 0},
+            {p: "Estaturas en cm: 150, 155, 160, 165, 170. Mediana:", o: ["160", "155", "165", "150"], r: 0},
+            {p: "Si un dato se repite 0 veces más que otro, el conjunto es:", o: ["Sin moda o todas son moda", "Bimodal", "Trimodal", "Siempre hay moda"], r: 0},
+            {p: "El RANGO de 3, 7, 12, 5, 9 es:", o: ["9 (12-3)", "12", "3", "7"], r: 0}
         ],
         "Productos notables": [
             {p: "Desarrolla: (x + 3)² =", o: ["x² + 6x + 9", "x² + 9", "x² + 3x + 9", "2x + 6"], r: 0},
@@ -843,6 +928,161 @@ const ejerciciosDB = {
     }
 };
 
+// ============ BANCO DE LECTURAS ============
+const lecturasDB = {
+    comprension: [
+        {
+            titulo: "El agua en nuestro planeta",
+            texto: "El agua cubre aproximadamente el 71% de la superficie terrestre. Sin embargo, solo el 2.5% es agua dulce y de ese porcentaje, menos del 1% está disponible para consumo humano en ríos, lagos y acuíferos subterráneos. El resto se encuentra en glaciares y casquetes polares. La contaminación del agua es uno de los problemas más graves que enfrenta la humanidad. Cada año, millones de personas enferman por consumir agua contaminada. Por eso es fundamental cuidar este recurso: no desperdiciarla, no tirar basura en ríos y apoyar programas de tratamiento de aguas residuales.",
+            preguntas: [
+                {p: "¿Qué porcentaje de la superficie terrestre cubre el agua?", o: ["71%", "25%", "50%", "90%"], r: 0},
+                {p: "¿Cuánta agua dulce existe en el planeta?", o: ["2.5% del total", "71% del total", "50% del total", "10% del total"], r: 0},
+                {p: "¿Dónde se encuentra la mayor parte del agua dulce?", o: ["Glaciares y casquetes polares", "Ríos y lagos", "En el mar", "En la atmósfera"], r: 0},
+                {p: "¿Cuál es uno de los problemas más graves según el texto?", o: ["La contaminación del agua", "La falta de ríos", "El calentamiento del sol", "La falta de mares"], r: 0},
+                {p: "¿Qué podemos hacer para cuidar el agua?", o: ["No desperdiciarla y no contaminar ríos", "Construir más presas", "Derretir glaciares", "Usar más agua"], r: 0},
+                {p: "La idea principal del texto es:", o: ["El agua es un recurso escaso que debemos cuidar", "El mar es muy grande", "Los glaciares se derriten", "El 71% del agua es dulce"], r: 0},
+                {p: "¿Qué tipo de texto es?", o: ["Expositivo", "Narrativo", "Poético", "Instructivo"], r: 0},
+                {p: "Menos del ___% del agua dulce está disponible para consumo:", o: ["1%", "50%", "25%", "10%"], r: 0},
+                {p: "¿Por qué enferman millones de personas cada año?", o: ["Por consumir agua contaminada", "Por no beber agua", "Por el frío", "Por los glaciares"], r: 0},
+                {p: "Un acuífero es:", o: ["Agua subterránea", "Un río", "Un glaciar", "Una nube"], r: 0}
+            ]
+        },
+        {
+            titulo: "La adolescencia y los cambios",
+            texto: "La adolescencia es una etapa de la vida que se inicia alrededor de los 10-12 años y termina aproximadamente a los 19. Durante este periodo, el cuerpo experimenta cambios físicos importantes debido a las hormonas. Pero no solo cambia el cuerpo: también cambian las emociones, la forma de pensar y las relaciones sociales. Es normal sentir confusión, querer más independencia y buscar una identidad propia. Los expertos recomiendan comunicarse con personas de confianza, hacer ejercicio, dormir bien y alimentarse sanamente para transitar esta etapa de la mejor manera.",
+            preguntas: [
+                {p: "¿A qué edad inicia la adolescencia aproximadamente?", o: ["10-12 años", "5-7 años", "18-20 años", "3-5 años"], r: 0},
+                {p: "¿Qué causa los cambios físicos en la adolescencia?", o: ["Las hormonas", "La alimentación", "El ejercicio", "Las vitaminas"], r: 0},
+                {p: "Además del cuerpo, ¿qué más cambia?", o: ["Emociones, pensamiento y relaciones", "Solo la estatura", "El nombre", "Los gustos de comida"], r: 0},
+                {p: "¿Qué es normal sentir en la adolescencia?", o: ["Confusión y deseo de independencia", "Nada", "Solo alegría", "Solo tristeza"], r: 0},
+                {p: "¿Qué recomiendan los expertos?", o: ["Comunicarse, hacer ejercicio y dormir bien", "No hablar con nadie", "Solo estudiar", "Comer chatarra"], r: 0},
+                {p: "¿Hasta qué edad dura la adolescencia?", o: ["Aproximadamente 19 años", "25 años", "15 años", "30 años"], r: 0},
+                {p: "La idea principal del texto es:", o: ["La adolescencia trae cambios y es normal", "Los adolescentes son problemáticos", "Las hormonas son malas", "Solo el cuerpo cambia"], r: 0},
+                {p: "¿Qué tipo de texto es?", o: ["Expositivo/informativo", "Cuento", "Fábula", "Poema"], r: 0},
+                {p: "Buscar una identidad propia significa:", o: ["Descubrir quién eres y qué quieres", "Copiar a otros", "No cambiar nunca", "Olvidar tu nombre"], r: 0},
+                {p: "¿Con quién se recomienda comunicarse?", o: ["Personas de confianza", "Desconocidos", "Nadie", "Solo en redes sociales"], r: 0}
+            ]
+        },
+        {
+            titulo: "Los ecosistemas de México",
+            texto: "México es uno de los países con mayor biodiversidad del mundo. Esto se debe a su ubicación geográfica, su variedad de climas y su complejo relieve. En el territorio mexicano podemos encontrar selvas tropicales en el sureste, desiertos en el norte, bosques templados en las sierras, manglares en las costas y arrecifes de coral en el Caribe. Cada ecosistema alberga especies únicas que no se encuentran en ningún otro lugar del planeta. Sin embargo, la deforestación, la urbanización y el cambio climático amenazan estos ecosistemas. Se estima que México ha perdido más del 50% de sus bosques originales.",
+            preguntas: [
+                {p: "¿Por qué México tiene tanta biodiversidad?", o: ["Su ubicación, climas y relieve variados", "Por ser muy grande", "Por tener mucha gente", "Por el turismo"], r: 0},
+                {p: "¿Dónde se encuentran las selvas tropicales?", o: ["En el sureste", "En el norte", "En el centro", "En todas partes"], r: 0},
+                {p: "¿Qué ecosistema hay en el norte de México?", o: ["Desiertos", "Selvas", "Manglares", "Arrecifes"], r: 0},
+                {p: "¿Qué amenaza a los ecosistemas mexicanos?", o: ["Deforestación, urbanización y cambio climático", "Los animales", "La lluvia", "El frío"], r: 0},
+                {p: "¿Cuántos bosques originales ha perdido México?", o: ["Más del 50%", "10%", "90%", "5%"], r: 0},
+                {p: "Los arrecifes de coral están en:", o: ["El Caribe", "El desierto", "Las sierras", "Los volcanes"], r: 0},
+                {p: "Un manglar se encuentra en:", o: ["Las costas", "Las montañas", "El desierto", "Los polos"], r: 0},
+                {p: "Biodiversidad significa:", o: ["Variedad de seres vivos", "Muchas plantas", "Solo animales", "Muchos ríos"], r: 0},
+                {p: "¿Qué tipo de texto es?", o: ["Expositivo", "Narrativo", "Argumentativo", "Instructivo"], r: 0},
+                {p: "Especies únicas que solo existen en un lugar se llaman:", o: ["Endémicas", "Comunes", "Invasoras", "Extintas"], r: 0}
+            ]
+        }
+    ],
+    cuento: [
+        {
+            titulo: "El reloj que detuvo el tiempo",
+            texto: "Había una vez un relojero llamado Don Augusto que vivía en un pequeño pueblo. Un día, un joven llamado Tomás llegó a su taller desesperado: 'Mi abuelo está muy enfermo y me pidió que le trajera más tiempo'. Don Augusto lo miró con tristeza y le dijo: 'No puedo darte más tiempo, pero puedo enseñarte algo mejor'. Tomó un reloj viejo y le quitó las manecillas. 'Cuando dejamos de contar los minutos, el tiempo deja de perseguirnos'. Tomás no entendió al principio, pero volvió con su abuelo y en lugar de contar las horas, se dedicó a escuchar sus historias, a reír con él y a abrazarlo. Años después, Tomás comprendió que Don Augusto le había dado el mejor regalo: la capacidad de vivir cada momento plenamente, sin que el reloj dictara su felicidad.",
+            preguntas: [
+                {p: "¿Quién era Don Augusto?", o: ["Un relojero", "Un médico", "Un maestro", "Un panadero"], r: 0},
+                {p: "¿Por qué llegó Tomás al taller?", o: ["Su abuelo estaba enfermo y quería más tiempo", "Quería comprar un reloj", "Buscaba trabajo", "Se perdió"], r: 0},
+                {p: "¿Qué le hizo Don Augusto al reloj?", o: ["Le quitó las manecillas", "Lo rompió", "Lo vendió", "Lo pintó"], r: 0},
+                {p: "¿Qué mensaje le dio Don Augusto a Tomás?", o: ["Que dejara de contar el tiempo y viviera el momento", "Que comprara más relojes", "Que buscara un doctor", "Que se fuera rápido"], r: 0},
+                {p: "¿Qué hizo Tomás con su abuelo después?", o: ["Escuchó sus historias, rió y lo abrazó", "Le compró un reloj", "Se fue de viaje", "No hizo nada"], r: 0},
+                {p: "El tema principal del cuento es:", o: ["Valorar los momentos con los seres queridos", "Los relojes son importantes", "El tiempo no existe", "Los abuelos siempre se enferman"], r: 0},
+                {p: "¿Cuándo comprendió Tomás la lección?", o: ["Años después", "Inmediatamente", "Nunca", "Al día siguiente"], r: 0},
+                {p: "El reloj sin manecillas simboliza:", o: ["Vivir sin estar pendiente del tiempo", "Un reloj roto", "La pobreza", "La vejez"], r: 0},
+                {p: "¿Dónde vivía Don Augusto?", o: ["En un pequeño pueblo", "En una ciudad grande", "En el campo", "En la playa"], r: 0},
+                {p: "El regalo de Don Augusto fue:", o: ["La capacidad de vivir cada momento plenamente", "Un reloj nuevo", "Dinero", "Medicina para el abuelo"], r: 0}
+            ]
+        },
+        {
+            titulo: "La última carta",
+            texto: "Sara encontró una carta amarillenta dentro de un libro viejo de la biblioteca. Estaba fechada en 1950 y decía: 'Querida Elena, sé que no podré volver. La guerra me aleja de ti, pero quiero que sepas que cada estrella que mires por la noche es un beso que te envío desde lejos. No me olvides. Tuyo siempre, Roberto.' Sara se conmovió tanto que decidió investigar. Después de semanas buscando, encontró a Elena, ahora una anciana de 92 años. Cuando Sara le entregó la carta, los ojos de Elena se llenaron de lágrimas: 'Siempre supe que me escribió, pero nunca recibí esta carta. Roberto murió en la guerra. Llevo 74 años mirando las estrellas cada noche.' Sara entendió que el amor verdadero no conoce el tiempo ni la distancia.",
+            preguntas: [
+                {p: "¿Dónde encontró Sara la carta?", o: ["Dentro de un libro de la biblioteca", "En su casa", "En la calle", "En un buzón"], r: 0},
+                {p: "¿En qué año estaba fechada la carta?", o: ["1950", "1990", "2000", "1920"], r: 0},
+                {p: "¿Quién escribió la carta?", o: ["Roberto", "Sara", "Elena", "Un soldado desconocido"], r: 0},
+                {p: "¿Por qué Roberto no podía volver?", o: ["Por la guerra", "Por su trabajo", "Estaba en otra ciudad", "No quería volver"], r: 0},
+                {p: "¿Qué representan las estrellas en la carta?", o: ["Besos enviados a la distancia", "Luces bonitas", "Otros soldados", "Los recuerdos"], r: 0},
+                {p: "¿Cuántos años tenía Elena cuando Sara la encontró?", o: ["92 años", "80 años", "70 años", "65 años"], r: 0},
+                {p: "¿Qué pasó con Roberto?", o: ["Murió en la guerra", "Volvió a casa", "Se casó con otra", "Viajó al extranjero"], r: 0},
+                {p: "¿Por cuántos años miró Elena las estrellas?", o: ["74 años", "50 años", "92 años", "20 años"], r: 0},
+                {p: "El tema principal del cuento es:", o: ["El amor verdadero trasciende tiempo y distancia", "Las guerras son malas", "Las bibliotecas son aburridas", "Las cartas se pierden"], r: 0},
+                {p: "¿Qué tipo de narrador tiene este cuento?", o: ["Tercera persona (omnisciente)", "Primera persona (Sara)", "Segunda persona", "No tiene narrador"], r: 0}
+            ]
+        }
+    ],
+    fabula: [
+        {
+            titulo: "La hormiga y la cigarra (versión moderna)",
+            texto: "En una escuela secundaria, había dos compañeras: Andrea, que siempre hacía sus tareas a tiempo, estudiaba para los exámenes y organizaba su tiempo; y Valeria, que prefería pasar las tardes en el celular, viendo videos y dejando todo para después. 'Ya haré la tarea mañana', decía Valeria cada día. Cuando llegaron los exámenes extraordinarios, Andrea aprobó todo sin problema. Valeria, en cambio, tuvo que presentar cinco materias y no le alcanzó el tiempo para estudiar todo. Reprobó tres. Al siguiente semestre, Valeria se acercó a Andrea: '¿Me enseñas a organizarme?' Andrea sonrió y le dijo: 'Claro, pero recuerda: el esfuerzo de cada día es lo que te da tranquilidad al final.'",
+            preguntas: [
+                {p: "¿Quién representa a la hormiga en esta fábula?", o: ["Andrea", "Valeria", "La maestra", "Ninguna"], r: 0},
+                {p: "¿Qué hacía Valeria en lugar de estudiar?", o: ["Veía videos en el celular", "Hacía deporte", "Leía libros", "Ayudaba en casa"], r: 0},
+                {p: "¿Cuántas materias tuvo que presentar Valeria en extraordinario?", o: ["Cinco", "Tres", "Todas", "Una"], r: 0},
+                {p: "¿Cuántas materias reprobó Valeria?", o: ["Tres", "Cinco", "Ninguna", "Todas"], r: 0},
+                {p: "¿Cuál es la moraleja de esta fábula?", o: ["El esfuerzo diario da tranquilidad al final", "No hay que estudiar", "Los exámenes no importan", "Es mejor el celular"], r: 0},
+                {p: "¿Qué le pidió Valeria a Andrea después?", o: ["Que le enseñara a organizarse", "Dinero", "Las respuestas del examen", "Nada"], r: 0},
+                {p: "¿Qué género literario es este texto?", o: ["Fábula", "Poema", "Noticia", "Carta"], r: 0},
+                {p: "Una fábula se caracteriza por:", o: ["Dejar una enseñanza o moraleja", "Ser muy larga", "No tener personajes", "Ser real"], r: 0},
+                {p: "¿En qué se parece al cuento original de la hormiga y la cigarra?", o: ["Una trabaja y la otra no, y hay consecuencias", "Son insectos", "Pasa en el campo", "Es invierno"], r: 0},
+                {p: "La actitud de Andrea al final muestra:", o: ["Generosidad y compañerismo", "Egoísmo", "Enojo", "Indiferencia"], r: 0}
+            ]
+        },
+        {
+            titulo: "El león y el ratón (versión adaptada)",
+            texto: "Carlos era el alumno más fuerte y popular de la escuela. Un día, un chico nuevo llamado Miguel, pequeño y tímido, tropezó y tiró los libros de Carlos. Todos esperaban que Carlos se enojara, pero solo dijo: 'No te preocupes, a cualquiera le pasa.' Semanas después, Carlos estaba en problemas: había olvidado su USB con el proyecto final y la fecha de entrega era ese día. Miguel, que era experto en computación, se acercó: 'Yo respaldé todos los archivos de la computadora del laboratorio. Aquí está tu proyecto.' Carlos lo miró sorprendido: 'Pero apenas me conoces.' Miguel sonrió: 'Tú fuiste amable conmigo cuando nadie más lo era. Los favores siempre se devuelven.'",
+            preguntas: [
+                {p: "¿Quién representa al león en esta fábula?", o: ["Carlos", "Miguel", "El maestro", "Los compañeros"], r: 0},
+                {p: "¿Quién representa al ratón?", o: ["Miguel", "Carlos", "El director", "Nadie"], r: 0},
+                {p: "¿Qué pasó cuando Miguel tiró los libros de Carlos?", o: ["Carlos no se enojó y fue amable", "Carlos se peleó", "Carlos lo reportó", "Carlos lloró"], r: 0},
+                {p: "¿En qué era experto Miguel?", o: ["En computación", "En deportes", "En cocina", "En música"], r: 0},
+                {p: "¿Cuál fue el problema de Carlos?", o: ["Olvidó su USB con el proyecto final", "Reprobó un examen", "Se enfermó", "Perdió su mochila"], r: 0},
+                {p: "¿Cómo ayudó Miguel a Carlos?", o: ["Tenía respaldado el archivo del proyecto", "Le prestó dinero", "Hizo el proyecto por él", "Le dio su USB"], r: 0},
+                {p: "La moraleja es:", o: ["Los favores siempre se devuelven / la bondad se recompensa", "Los fuertes siempre ganan", "No hay que ayudar a nadie", "La tecnología es mala"], r: 0},
+                {p: "¿Por qué Miguel ayudó a Carlos?", o: ["Porque Carlos fue amable cuando nadie más lo era", "Por dinero", "Porque era su amigo desde antes", "El maestro lo obligó"], r: 0},
+                {p: "¿Qué tipo de texto es?", o: ["Fábula adaptada", "Noticia", "Poema", "Instructivo"], r: 0},
+                {p: "La enseñanza aplicada a la vida sería:", o: ["Ser amable con todos porque no sabes quién te ayudará", "Ser fuerte para dominar", "No ayudar a desconocidos", "La escuela no importa"], r: 0}
+            ]
+        }
+    ],
+    narrativo: [
+        {
+            titulo: "El primer día en la nueva escuela",
+            texto: "Sofía apretaba su mochila contra el pecho mientras caminaba por el pasillo de su nueva escuela. Acababa de mudarse de Veracruz a Zitácuaro y no conocía a nadie. Las risas de los demás alumnos la hacían sentir invisible. Se sentó sola en una banca del patio. De pronto, una chica de cabello rizado se sentó a su lado: '¿Eres nueva? Yo soy Daniela. El primer día siempre es el peor, pero te prometo que mañana será mejor.' Sofía sonrió tímidamente. A la hora del almuerzo, Daniela la presentó con su grupo de amigos. Para el final del día, Sofía ya no apretaba su mochila tan fuerte. Quizá Daniela tenía razón: mañana sería mejor.",
+            preguntas: [
+                {p: "¿De dónde se mudó Sofía?", o: ["De Veracruz", "De CDMX", "De Guadalajara", "De Monterrey"], r: 0},
+                {p: "¿Cómo se sentía Sofía al principio?", o: ["Nerviosa e invisible", "Feliz y emocionada", "Enojada", "Indiferente"], r: 0},
+                {p: "¿Quién se acercó a Sofía?", o: ["Daniela", "Un maestro", "El director", "Nadie"], r: 0},
+                {p: "¿Qué hizo Daniela a la hora del almuerzo?", o: ["Presentó a Sofía con sus amigos", "Se fue sola", "Ignoró a Sofía", "Se fue a su casa"], r: 0},
+                {p: "El detalle de 'apretar la mochila' simboliza:", o: ["Nerviosismo e inseguridad", "Que le gustaba su mochila", "Que hacía frío", "Que tenía muchos libros"], r: 0},
+                {p: "Al final del día, Sofía:", o: ["Se sentía más tranquila", "Quería regresar a Veracruz", "Estaba más nerviosa", "Se enojó con todos"], r: 0},
+                {p: "¿Qué tipo de narrador tiene el texto?", o: ["Tercera persona", "Primera persona", "Segunda persona", "Sin narrador"], r: 0},
+                {p: "El tema principal es:", o: ["La importancia de la amabilidad con los nuevos", "Las mudanzas son malas", "La escuela es aburrida", "Los amigos no importan"], r: 0},
+                {p: "¿A qué ciudad se mudó Sofía?", o: ["Zitácuaro", "Morelia", "Toluca", "Puebla"], r: 0},
+                {p: "¿Qué tipo de texto es?", o: ["Narrativo", "Expositivo", "Instructivo", "Argumentativo"], r: 0}
+            ]
+        },
+        {
+            titulo: "El examen más difícil",
+            texto: "Marcos miró la hoja del examen y sintió que el estómago se le cerraba. No había estudiado lo suficiente. A su alrededor, todos escribían con rapidez. El reloj marcaba que solo quedaban 30 minutos. Intentó concentrarse pero las letras se movían frente a sus ojos. Entonces recordó lo que su mamá siempre decía: 'Respira, piensa y haz lo mejor que puedas.' Cerró los ojos tres segundos, respiró profundo y empezó por las preguntas que sí sabía. Poco a poco, fue recuperando la calma. No contestó todo perfecto, pero entregó un examen del que no se avergonzó. Al salir, se prometió algo: nunca más llegaría sin prepararse. Ese día aprendió que la preparación da confianza, y la confianza da resultados.",
+            preguntas: [
+                {p: "¿Por qué Marcos se sentía mal?", o: ["No había estudiado lo suficiente", "Estaba enfermo", "No encontraba la escuela", "El examen era en inglés"], r: 0},
+                {p: "¿Cuánto tiempo le quedaba del examen?", o: ["30 minutos", "10 minutos", "1 hora", "5 minutos"], r: 0},
+                {p: "¿Qué consejo recordó de su mamá?", o: ["Respira, piensa y haz lo mejor que puedas", "Copia del compañero", "Sal del salón", "No hagas el examen"], r: 0},
+                {p: "¿Qué estrategia usó Marcos?", o: ["Empezó por las preguntas que sí sabía", "Copió", "Se rindió", "Pidió más tiempo"], r: 0},
+                {p: "¿Contestó todo perfecto?", o: ["No, pero hizo lo mejor que pudo", "Sí, todo bien", "No contestó nada", "Copió todo"], r: 0},
+                {p: "¿Qué se prometió Marcos al salir?", o: ["Nunca más llegar sin prepararse", "No volver a la escuela", "Copiar la próxima vez", "Nada"], r: 0},
+                {p: "La enseñanza del texto es:", o: ["La preparación da confianza y resultados", "Los exámenes no importan", "Respirar resuelve todo", "No hay que estudiar"], r: 0},
+                {p: "El texto está narrado en:", o: ["Tercera persona", "Primera persona", "Segunda persona", "Sin narrador"], r: 0},
+                {p: "¿Qué sentía Marcos al inicio?", o: ["Ansiedad y nervios", "Felicidad", "Sueño", "Hambre"], r: 0},
+                {p: "¿Qué tipo de texto es?", o: ["Narrativo", "Instructivo", "Argumentativo", "Poético"], r: 0}
+            ]
+        }
+    ]
+};
 
 // ============ MODO ALUMNO / PROFESOR ============
 function setModo(modo) {
@@ -1399,6 +1639,72 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('gen-grado').addEventListener('change', updateTemas);
     document.getElementById('hoja-grado').addEventListener('change', updateHojaTemas);
 });
+
+// ============ LECTURAS ============
+function mostrarLectura() {
+    const tipo = document.getElementById('lect-tipo').value;
+    const banco = lecturasDB[tipo] || [];
+    if (banco.length === 0) {
+        document.getElementById('lecturas-output').innerHTML = '<div class="card"><p>No hay lecturas disponibles para este tipo.</p></div>';
+        return;
+    }
+    const lectura = banco[Math.floor(Math.random() * banco.length)];
+    
+    let html = `<div class="card">
+        <div style="text-align:center; border-bottom: 2px solid var(--azul); padding-bottom: 15px; margin-bottom: 15px;">
+            <h2>📖 ${lectura.titulo}</h2>
+            <p class="tag">${tipo.charAt(0).toUpperCase() + tipo.slice(1)}</p>
+        </div>
+        <div style="background: var(--crema); padding: 20px; border-radius: 10px; margin-bottom: 20px; line-height: 1.8; font-size: 1.05em; border-left: 4px solid var(--dorado);">
+            <p>${lectura.texto}</p>
+        </div>
+        <h3>Preguntas de comprensión:</h3><br>`;
+    
+    lectura.preguntas.forEach((preg, i) => {
+        html += `<div class="exercise"><h4>${i+1}. ${preg.p}</h4><div class="options" id="lect-opts-${i}">`;
+        preg.o.forEach((op, j) => {
+            if (modoActual === 'profesor') {
+                const marca = j === preg.r ? ' ✅' : '';
+                const estilo = j === preg.r ? 'class="correct"' : '';
+                html += `<label ${estilo}>${String.fromCharCode(65+j)}) ${op}${marca}</label>`;
+            } else {
+                html += `<label onclick="seleccionarLectura(this, ${i}, ${j})">${String.fromCharCode(65+j)}) ${op}</label>`;
+            }
+        });
+        html += `</div></div>`;
+    });
+    
+    if (modoActual === 'alumno') {
+        html += `<br><button class="btn btn-success" onclick="enviarLecturaWA('${lectura.titulo}', '${tipo}')">📤 Enviar respuestas al tutor</button>`;
+    } else {
+        html += `<br><button class="btn btn-success" onclick="window.print()">🖨️ Imprimir</button>`;
+    }
+    html += `</div>`;
+    
+    document.getElementById('lecturas-output').innerHTML = html;
+    window.currentLectura = lectura;
+    window.respuestasLectura = {};
+}
+
+function seleccionarLectura(label, pregIndex, opIndex) {
+    const container = document.getElementById('lect-opts-' + pregIndex);
+    container.querySelectorAll('label').forEach(l => l.classList.remove('selected'));
+    label.classList.add('selected');
+    if (!window.respuestasLectura) window.respuestasLectura = {};
+    window.respuestasLectura[pregIndex] = opIndex;
+}
+
+function enviarLecturaWA(titulo, tipo) {
+    if (!window.currentLectura || !window.respuestasLectura) return;
+    let correctas = 0;
+    const total = window.currentLectura.preguntas.length;
+    window.currentLectura.preguntas.forEach((preg, i) => {
+        if (window.respuestasLectura[i] === preg.r) correctas++;
+    });
+    enviarResultadosWhatsApp('Lectura de Comprensión', { materia: 'español', tema: titulo, grado: tipo, correctas, total });
+    window.respuestasLectura = {};
+}
+
 </script>
 </body>
 </html>
