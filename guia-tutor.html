@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía del Tutor - Danyani's</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; color: #333; line-height: 1.6; }
+        :root { --azul: #1a3a5c; --azul-claro: #2c5f8a; --verde: #27ae60; --dorado: #f4a623; --crema: #fdfbf7; --rojo: #e74c3c; }
+
+        /* ACCESO */
+        #pantalla-clave { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, var(--azul), var(--azul-claro)); }
+        .clave-box { background: white; padding: 40px; border-radius: 15px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+        .clave-box h2 { color: var(--azul); margin-bottom: 5px; }
+        .clave-box p { color: #666; margin-bottom: 20px; font-size: 0.9em; }
+        .clave-box input { padding: 12px; width: 100%; border: 2px solid #ddd; border-radius: 8px; font-size: 1em; text-align: center; margin-bottom: 15px; }
+        .clave-box input:focus { border-color: var(--dorado); outline: none; }
+        .clave-box button { padding: 12px 30px; background: var(--azul); color: white; border: none; border-radius: 8px; font-size: 1em; cursor: pointer; font-weight: bold; }
+        .clave-box .error { color: var(--rojo); font-size: 0.85em; display: none; margin-top: 10px; }
+
+        #contenido-guia { display: none; }
+
+        /* HEADER */
+        .header { background: linear-gradient(135deg, var(--azul), var(--azul-claro)); color: white; padding: 20px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 3px 15px rgba(0,0,0,0.2); }
+        .header h1 { font-size: 1.5em; }
+        .header h1 span { color: var(--dorado); }
+        .header p { opacity: 0.8; font-size: 0.85em; }
+
+        /* NAV MATERIAS */
+        .nav-materias { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 15px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 68px; z-index: 99; }
+        .nav-materias button { padding: 8px 16px; border: 2px solid var(--azul); background: white; color: var(--azul); border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.85em; transition: all 0.3s; }
+        .nav-materias button:hover, .nav-materias button.active { background: var(--azul); color: white; }
+
+        /* CONTENIDO */
+        .container { max-width: 900px; margin: 20px auto; padding: 0 15px; }
+        .materia-section { display: none; }
+        .materia-section.active { display: block; }
+
+        /* FICHAS */
+        .ficha { background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 3px 15px rgba(0,0,0,0.08); border-left: 5px solid var(--azul); }
+        .ficha.verde { border-left-color: var(--verde); }
+        .ficha.dorado { border-left-color: var(--dorado); }
+        .ficha.rojo { border-left-color: var(--rojo); }
+        .ficha h3 { color: var(--azul); margin-bottom: 12px; font-size: 1.2em; }
+        .ficha h4 { color: var(--azul-claro); margin: 15px 0 8px; }
+        .ficha p { margin-bottom: 8px; }
+        .ficha ul, .ficha ol { margin-left: 20px; margin-bottom: 10px; }
+        .ficha li { margin-bottom: 5px; }
+
+        /* FÓRMULAS */
+        .formula { background: #f0f4ff; border: 1px solid #d0d8ff; padding: 12px 18px; border-radius: 8px; margin: 10px 0; font-family: 'Courier New', monospace; font-size: 1.1em; text-align: center; color: var(--azul); font-weight: bold; }
+        .formula-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 10px 0; }
+        .formula-item { background: #f0f4ff; border: 1px solid #d0d8ff; padding: 10px; border-radius: 8px; text-align: center; }
+        .formula-item .nombre { font-size: 0.8em; color: #666; }
+        .formula-item .expr { font-family: monospace; font-weight: bold; color: var(--azul); font-size: 1.05em; }
+
+        /* TIPS */
+        .tip { background: #fff3cd; border-left: 4px solid var(--dorado); padding: 12px 15px; border-radius: 0 8px 8px 0; margin: 12px 0; }
+        .tip strong { color: var(--dorado); }
+
+        /* EJEMPLO */
+        .ejemplo { background: #d4edda; border-left: 4px solid var(--verde); padding: 12px 15px; border-radius: 0 8px 8px 0; margin: 12px 0; }
+        .ejemplo strong { color: var(--verde); }
+
+        /* REGLA */
+        .regla { background: #f8d7da; border-left: 4px solid var(--rojo); padding: 12px 15px; border-radius: 0 8px 8px 0; margin: 12px 0; }
+        .regla strong { color: var(--rojo); }
+
+        /* TABLA */
+        table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.9em; }
+        th { background: var(--azul); color: white; padding: 10px; text-align: left; }
+        td { padding: 8px 10px; border-bottom: 1px solid #eee; }
+        tr:hover { background: #f8f9ff; }
+
+        /* BÚSQUEDA */
+        .search-bar { max-width: 900px; margin: 15px auto; padding: 0 15px; }
+        .search-bar input { width: 100%; padding: 12px 20px; border: 2px solid #ddd; border-radius: 25px; font-size: 1em; }
+        .search-bar input:focus { border-color: var(--dorado); outline: none; }
+
+        /* PRINT */
+        @media print {
+            .header, .nav-materias, .search-bar, #pantalla-clave { display: none !important; }
+            #contenido-guia { display: block !important; }
+            .materia-section { display: block !important; page-break-before: always; }
+            .materia-section:first-child { page-break-before: avoid; }
+            .ficha { box-shadow: none; border: 1px solid #ddd; page-break-inside: avoid; }
+            body { background: white; }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 600px) {
+            .nav-materias button { padding: 6px 12px; font-size: 0.75em; }
+            .formula-grid { grid-template-columns: 1fr; }
+            .header h1 { font-size: 1.2em; }
+        }
+    </style>
+</head>
+<body>
+
+
+    <!-- PANTALLA DE CLAVE -->
+    <div id="pantalla-clave">
+        <div class="clave-box">
+            <h2>🔐 Guía del Tutor</h2>
+            <p>Danyani's - Tutorías & Mentoría de Vida</p>
+            <p style="font-size:0.85em; color:#999;">Acceso exclusivo para tutores</p>
+            <input type="password" id="clave-tutor" placeholder="Ingresa tu clave" onkeypress="if(event.key==='Enter')acceder()">
+            <br>
+            <button onclick="acceder()">Entrar</button>
+            <p class="error" id="error-clave">❌ Clave incorrecta</p>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div id="contenido-guia">
+        <div class="header">
+            <h1>📘 Guía del Tutor - Danyani<span>'s</span></h1>
+            <p>Resúmenes, fórmulas, técnicas de enseñanza y mentoría de vida</p>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" id="buscar" placeholder="🔍 Buscar tema, fórmula o concepto..." oninput="filtrar()">
+        </div>
+
+        <div class="nav-materias">
+            <button onclick="showMateria('tecnicas')" class="active" id="nav-tecnicas">💡 Técnicas</button>
+            <button onclick="showMateria('mates')" id="nav-mates">📐 Mates</button>
+            <button onclick="showMateria('espanol')" id="nav-espanol">📖 Español</button>
+            <button onclick="showMateria('ciencias')" id="nav-ciencias">🔬 Ciencias</button>
+            <button onclick="showMateria('historia')" id="nav-historia">📜 Historia</button>
+            <button onclick="showMateria('ingles')" id="nav-ingles">🇬🇧 Inglés</button>
+            <button onclick="showMateria('mentoria')" id="nav-mentoria">🌱 Mentoría</button>
+        </div>
+
+        <div class="container">
+
+
+<!-- ===== SECCIÓN: TÉCNICAS DE ENSEÑANZA ===== -->
+<div class="materia-section active" id="sec-tecnicas">
+    <div class="ficha dorado">
+        <h3>💡 Las 7 Reglas de Oro para Tutorías Efectivas</h3>
+        <p><em>Basado en investigación de Stanford, Carnegie Mellon y Third Space Learning</em></p>
+        <ol>
+            <li><strong>Relación primero, contenido después.</strong> Dedica los primeros 5 minutos a conectar con el alumno. Pregunta cómo está, qué le preocupa. La confianza es la base del aprendizaje.</li>
+            <li><strong>Diagnóstico antes de enseñar.</strong> Siempre empieza preguntando: "¿Qué sabes de este tema?" Construye sobre lo que ya sabe, no desde cero.</li>
+            <li><strong>Explica → Demuestra → Practica → Aplica.</strong> Nunca saltes pasos. Primero explica el concepto, luego muestra un ejemplo, después que lo haga contigo, finalmente que lo haga solo.</li>
+            <li><strong>Máximo 15 minutos de explicación continua.</strong> El cerebro adolescente pierde atención después de 15 min. Alterna: explica 15 min → ejercicio 10 min → descanso 2 min.</li>
+            <li><strong>Pregunta en lugar de corregir.</strong> En vez de decir "está mal", pregunta: "¿Qué paso hiciste aquí? ¿Qué pasa si...?" Que el alumno descubra su error.</li>
+            <li><strong>Celebra el proceso, no solo el resultado.</strong> "¡Bien! Usaste el método correcto" importa más que "te sacaste 10".</li>
+            <li><strong>Cierra con mentoría.</strong> Los últimos 5 minutos reflexiona: ¿Qué aprendiste hoy? ¿Cómo te sientes? ¿Qué aplicarás esta semana?</li>
+        </ol>
+        <div class="tip"><strong>💡 TIP:</strong> Según Stanford, las tutorías personalizadas son LA intervención más efectiva de todas (más que tecnología, clases extra o programas de verano).</div>
+    </div>
+
+    <div class="ficha">
+        <h3>📐 Cómo Enseñar MATEMÁTICAS</h3>
+        <table>
+            <tr><th>Técnica</th><th>Cómo aplicarla</th></tr>
+            <tr><td><strong>CPA (Concreto → Pictórico → Abstracto)</strong></td><td>Primero objetos reales, luego dibujos, al final la fórmula. Ej: fracciones con pizza real → dibujo de pizza → 1/4 + 1/4</td></tr>
+            <tr><td><strong>Problemas de la vida real</strong></td><td>Usa ejemplos que le importen: "Si tu recarga cuesta $100 y gastas 3/4 en datos, ¿cuánto te queda?"</td></tr>
+            <tr><td><strong>Error productivo</strong></td><td>Deja que se equivoque, luego pregunta "¿por qué crees que no salió?" El error enseña más que la explicación.</td></tr>
+            <tr><td><strong>Paso a paso narrado</strong></td><td>Que el alumno diga en VOZ ALTA cada paso que hace. "Primero despejo x, luego divido..." Si lo dice, lo entiende.</td></tr>
+            <tr><td><strong>Múltiples caminos</strong></td><td>Muestra que un problema se puede resolver de 2-3 formas. Deja que elija la que le haga más sentido.</td></tr>
+        </table>
+        <div class="ejemplo"><strong>🌱 Mentoría integrada:</strong> "Las matemáticas son como la vida: hay problemas que parecen imposibles, pero si los divides en pasos pequeños, siempre encuentras la solución."</div>
+    </div>
+
+    <div class="ficha verde">
+        <h3>📖 Cómo Enseñar ESPAÑOL</h3>
+        <table>
+            <tr><th>Técnica</th><th>Cómo aplicarla</th></tr>
+            <tr><td><strong>Predecir → Leer → Verificar</strong></td><td>Antes de leer: "¿De qué crees que trata?" Lee. Después: "¿Acertaste?" Activa comprensión.</td></tr>
+            <tr><td><strong>Subrayado activo</strong></td><td>Verde: idea principal. Amarillo: datos importantes. Rosa: palabras que no entiende.</td></tr>
+            <tr><td><strong>Parafraseo constante</strong></td><td>Cada párrafo pregunta: "Dime con tus palabras qué dice aquí." Si no puede, no entendió.</td></tr>
+            <tr><td><strong>Escritura libre (5 min)</strong></td><td>Empieza cada sesión con 5 min de escritura libre sobre cualquier tema. Quita el miedo a escribir.</td></tr>
+            <tr><td><strong>Conexión personal</strong></td><td>"¿Te ha pasado algo parecido al personaje?" Conectar el texto con su vida mejora comprensión 3x.</td></tr>
+        </table>
+        <div class="ejemplo"><strong>🌱 Mentoría integrada:</strong> "Aprender a expresarte bien con palabras te da poder. Quien se comunica bien, convence, inspira y logra lo que quiere en la vida."</div>
+    </div>
+
+    <div class="ficha">
+        <h3>🔬 Cómo Enseñar CIENCIAS</h3>
+        <table>
+            <tr><th>Técnica</th><th>Cómo aplicarla</th></tr>
+            <tr><td><strong>Indagación guiada</strong></td><td>No des la respuesta. Pregunta: "¿Qué crees que pasaría si...?" Que formule hipótesis antes de explicar.</td></tr>
+            <tr><td><strong>Experimentos caseros</strong></td><td>Vinagre + bicarbonato = reacción química. Globo + botella = presión. Lo que toca, lo recuerda.</td></tr>
+            <tr><td><strong>Analogías cotidianas</strong></td><td>Átomo = sistema solar en miniatura. Célula = fábrica con departamentos. ADN = manual de instrucciones.</td></tr>
+            <tr><td><strong>Mapas conceptuales</strong></td><td>Conectar ideas visualmente. "¿Cómo se relaciona la fotosíntesis con lo que comemos?"</td></tr>
+            <tr><td><strong>Ciencia en su vida</strong></td><td>"¿Por qué el celular se calienta?" = Electricidad. "¿Por qué engordas?" = Nutrición.</td></tr>
+        </table>
+        <div class="ejemplo"><strong>🌱 Mentoría integrada:</strong> "La ciencia te enseña a cuestionar, experimentar y no creer todo lo que te dicen. Eso aplica en la vida: investiga antes de decidir."</div>
+    </div>
+
+    <div class="ficha dorado">
+        <h3>📜 Cómo Enseñar HISTORIA</h3>
+        <table>
+            <tr><th>Técnica</th><th>Cómo aplicarla</th></tr>
+            <tr><td><strong>Storytelling (contar como historia)</strong></td><td>No memorizar fechas. Contar como si fuera una serie de Netflix: "Imagina que eres un campesino en 1910..."</td></tr>
+            <tr><td><strong>Líneas del tiempo visuales</strong></td><td>Dibuja una línea y ubica eventos. El alumno DIBUJA y ESCRIBE. Lo visual se queda en la memoria.</td></tr>
+            <tr><td><strong>Causa-Consecuencia</strong></td><td>Siempre preguntar: "¿POR QUÉ pasó esto? ¿QUÉ provocó?" No el qué, sino el por qué.</td></tr>
+            <tr><td><strong>Conectar con el presente</strong></td><td>"La Revolución fue por desigualdad. ¿Crees que hoy hay desigualdad? ¿En qué se parece?"</td></tr>
+            <tr><td><strong>Debate de perspectivas</strong></td><td>"Si fueras Zapata, ¿qué harías? ¿Y si fueras Porfirio Díaz?" Ponerse en los zapatos de otro.</td></tr>
+        </table>
+        <div class="ejemplo"><strong>🌱 Mentoría integrada:</strong> "Conocer la historia te ayuda a no repetir errores. En tu vida, reflexiona sobre tus decisiones pasadas para tomar mejores decisiones futuras."</div>
+    </div>
+
+    <div class="ficha verde">
+        <h3>🇬🇧 Cómo Enseñar INGLÉS</h3>
+        <table>
+            <tr><th>Técnica</th><th>Cómo aplicarla</th></tr>
+            <tr><td><strong>Inmersión con contenido que le guste</strong></td><td>¿Le gustan los videojuegos? Vocabulario de gaming. ¿Música? Traduce canciones. El interés es el motor.</td></tr>
+            <tr><td><strong>Repetición espaciada</strong></td><td>Revisar vocabulario nuevo a los 5 min, 1 día, 3 días y 1 semana. Así se graba en memoria a largo plazo.</td></tr>
+            <tr><td><strong>Output antes de input</strong></td><td>Que intente decir/escribir ANTES de que le enseñes la regla. Se equivocará, pero estará motivado a aprender la regla.</td></tr>
+            <tr><td><strong>Chunks, no palabras sueltas</strong></td><td>No enseñes "go" aislado. Enseña "go to school", "go home", "let's go". Frases completas.</td></tr>
+            <tr><td><strong>Error sin miedo</strong></td><td>NUNCA te rías de su pronunciación. "Muy bien, casi perfecto, escucha de nuevo..." La confianza es todo.</td></tr>
+        </table>
+        <div class="ejemplo"><strong>🌱 Mentoría integrada:</strong> "El inglés te abre puertas que ni imaginas: becas, trabajos, viajes, conocer gente de todo el mundo. Cada palabra nueva es una llave más."</div>
+    </div>
+
+    <div class="ficha rojo">
+        <h3>⚠️ Errores Comunes del Tutor (evítalos)</h3>
+        <ul>
+            <li>❌ Hablar más de 15 minutos sin parar</li>
+            <li>❌ Resolver el ejercicio por el alumno ("mira, así se hace")</li>
+            <li>❌ Avanzar sin confirmar que entendió el paso anterior</li>
+            <li>❌ Usar solo un método (algunos son visuales, otros auditivos)</li>
+            <li>❌ No conectar con el alumno emocionalmente antes de enseñar</li>
+            <li>❌ Comparar con otros alumnos ("tu compañero sí puede")</li>
+            <li>❌ Saltarse la parte de mentoría ("no hay tiempo")</li>
+        </ul>
+        <div class="regla"><strong>⚠️ REGLA:</strong> Si el alumno no aprende, no es porque "es burro". Es porque AÚN no encontramos la forma correcta de explicarle. Cambia el método, no al alumno.</div>
+    </div>
+</div>
+
+
+<!-- ===== SECCIÓN: MATEMÁTICAS ===== -->
+<div class="materia-section" id="sec-mates">
+    <div class="ficha">
+        <h3>📐 Aritmética: Operaciones con Fracciones</h3>
+        <h4>Suma y Resta de Fracciones</h4>
+        <div class="regla"><strong>⚠️ REGLA:</strong> Solo se pueden sumar/restar fracciones con el MISMO denominador. Si son diferentes, hay que sacar el mínimo común múltiplo (mcm).</div>
+        <div class="formula-grid">
+            <div class="formula-item"><div class="nombre">Mismo denominador</div><div class="expr">a/c ± b/c = (a±b)/c</div></div>
+            <div class="formula-item"><div class="nombre">Diferente denominador</div><div class="expr">a/b ± c/d = (ad ± bc)/bd</div></div>
+        </div>
+        <div class="ejemplo"><strong>✅ Ejemplo:</strong> 2/3 + 1/4 → mcm(3,4)=12 → 8/12 + 3/12 = 11/12</div>
+        <div class="tip"><strong>💡 Cómo explicarlo:</strong> Usa pizza: "¿Puedes sumar 2 rebanadas de una pizza cortada en 3 con 1 rebanada de otra cortada en 4? No, porque son pedazos de diferente tamaño. Hay que cortarlas igual primero."</div>
+
+        <h4>Multiplicación de Fracciones</h4>
+        <div class="formula">a/b × c/d = (a×c) / (b×d)</div>
+        <p>Se multiplica numerador × numerador y denominador × denominador. <strong>No necesitas mcm.</strong></p>
+        <div class="ejemplo"><strong>✅ Ejemplo:</strong> 2/3 × 4/5 = 8/15</div>
+
+        <h4>División de Fracciones</h4>
+        <div class="formula">a/b ÷ c/d = a/b × d/c (se voltea la segunda y se multiplica)</div>
+        <div class="ejemplo"><strong>✅ Ejemplo:</strong> 3/4 ÷ 2/5 = 3/4 × 5/2 = 15/8</div>
+        <div class="tip"><strong>💡 Truco para recordar:</strong> "Para dividir fracciones, la segunda la VOLTEAS (inviertes) y MULTIPLICAS."</div>
+        <div class="ejemplo"><strong>🌱 Mentoría:</strong> "Las fracciones son como dividir tu tiempo: si no lo organizas bien, no te alcanza. ¿Cómo divides tu tiempo entre escuela, descanso y amigos?"</div>
+    </div>
+
+    <div class="ficha verde">
+        <h3>📐 Ecuaciones de Primer Grado</h3>
+        <div class="regla"><strong>⚠️ REGLA CLAVE:</strong> Lo que hagas de un lado, hazlo del otro. La igualdad se mantiene.</div>
+        <h4>Pasos para resolver:</h4>
+        <ol>
+            <li>Quitar paréntesis (distribuir)</li>
+            <li>Agrupar términos con x de un lado</li>
+            <li>Agrupar números del otro lado</li>
+            <li>Despejar x (dividir/multiplicar)</li>
+        </ol>
+        <div class="ejemplo"><strong>✅ Ejemplo paso a paso:</strong><br>
+            3(x + 2) = 2x + 10<br>
+            3x + 6 = 2x + 10 &nbsp;&nbsp;(distribuir)<br>
+            3x - 2x = 10 - 6 &nbsp;&nbsp;(agrupar)<br>
+            x = 4 ✅
+        </div>
+        <div class="tip"><strong>💡 Cómo explicarlo:</strong> "La ecuación es una balanza. Si pones algo de un lado, debes poner lo mismo del otro para que no se caiga."</div>
+        <div class="ejemplo"><strong>🌱 Mentoría:</strong> "Resolver ecuaciones es como resolver problemas en la vida: identifica qué no sabes (la x), usa lo que sí sabes, y paso a paso llegas a la respuesta."</div>
+    </div>
+
+    <div class="ficha">
+        <h3>📐 Ecuaciones de Segundo Grado</h3>
+        <div class="formula">ax² + bx + c = 0</div>
+        <h4>Tres tipos:</h4>
+        <table>
+            <tr><th>Tipo</th><th>Forma</th><th>Método</th></tr>
+            <tr><td>Completa</td><td>ax²+bx+c=0</td><td>Fórmula general o factorización</td></tr>
+            <tr><td>Incompleta (sin c)</td><td>ax²+bx=0</td><td>Factorizar: x(ax+b)=0</td></tr>
+            <tr><td>Incompleta (sin b)</td><td>ax²+c=0</td><td>Despejar: x=±√(-c/a)</td></tr>
+        </table>
+        <h4>Fórmula General (la chicharronera):</h4>
+        <div class="formula">x = (-b ± √(b²-4ac)) / 2a</div>
+        <div class="tip"><strong>💡 Truco para memorizar:</strong> "Menos b, más menos raíz de b cuadrada menos cuatro a-ce, todo sobre dos a." Cantarlo como canción ayuda.</div>
+        <div class="ejemplo"><strong>✅ Ejemplo:</strong> x²+5x+6=0 → a=1, b=5, c=6<br>
+            x = (-5 ± √(25-24)) / 2 = (-5 ± 1) / 2<br>
+            x₁ = -4/2 = -2 &nbsp; x₂ = -6/2 = -3 ✅
+        </div>
+        <p><strong>Verificación rápida por factorización:</strong> (x+2)(x+3)=0 → x=-2, x=-3 ✅</p>
+        <div class="ejemplo"><strong>🌱 Mentoría:</strong> "A veces un problema tiene más de una solución (como las ecuaciones cuadráticas). En la vida también: no hay un solo camino correcto."</div>
+    </div>
+
+    <div class="ficha dorado">
+        <h3>📐 Proporcionalidad Directa e Inversa</h3>
+        <table>
+            <tr><th>Directa</th><th>Inversa</th></tr>
+            <tr><td>Más de uno = más del otro</td><td>Más de uno = menos del otro</td></tr>
+            <tr><td>Ej: Más kg = más precio</td><td>Ej: Más obreros = menos días</td></tr>
+            <tr><td>Se multiplica en CRUZ</td><td>Se multiplica en LÍNEA</td></tr>
+        </table>
+        <div class="formula-grid">
+            <div class="formula-item"><div class="nombre">Directa</div><div class="expr">a/b = c/x → x = bc/a</div></div>
+            <div class="formula-item"><div class="nombre">Inversa</div><div class="expr">a×b = c×x → x = ab/c</div></div>
+        </div>
+        <div class="tip"><strong>💡 Truco para identificar:</strong> Pregunta: "Si aumento uno, ¿el otro SUBE o BAJA?" Si sube = directa. Si baja = inversa.</div>
+        <div class="ejemplo"><strong>✅ Directa:</strong> 3 kg → $45, ¿5 kg? → 5×45/3 = $75<br>
+            <strong>✅ Inversa:</strong> 4 obreros → 6 días, ¿8 obreros? → 4×6/8 = 3 días</div>
+        <div class="ejemplo"><strong>🌱 Mentoría:</strong> "En la vida hay proporciones: más esfuerzo = más resultados (directa). Pero también: más distracciones = menos tiempo para lo importante (inversa). ¿Dónde estás poniendo tu esfuerzo?"</div>
+    </div>
+
+    <div class="ficha verde">
+        <h3>📐 Moda, Media y Mediana</h3>
+        <div class="formula-grid">
+            <div class="formula-item"><div class="nombre">MODA</div><div class="expr">El que MÁS se repite</div></div>
+            <div class="formula-item"><div class="nombre">MEDIA (promedio)</div><div class="expr">Suma de todos ÷ cantidad</div></div>
+            <div class="formula-item"><div class="nombre">MEDIANA</div><div class="expr">El de en MEDIO (ordenar primero)</div></div>
+            <div class="formula-item"><div class="nombre">RANGO</div><div class="expr">Mayor - Menor</div></div>
+        </div>
+        <div class="ejemplo"><strong>✅ Ejemplo con:</strong> 5, 3, 8, 3, 6, 3, 9<br>
+            Ordenado: 3, 3, 3, 5, 6, 8, 9<br>
+            • Moda = 3 (se repite más)<br>
+            • Media = (3+3+3+5+6+8+9)/7 = 37/7 = 5.28<br>
+            • Mediana = 5 (el de en medio)<br>
+            • Rango = 9-3 = 6
+        </div>
+        <div class="tip"><strong>💡 Si son pares:</strong> La mediana es el PROMEDIO de los dos del centro. Ej: 2,4,6,8 → mediana = (4+6)/2 = 5</div>
+        <div class="ejemplo"><strong>🌱 Mentoría:</strong> "Tu promedio de calificaciones es como tu 'media'. Pero un solo 10 no te salva si tienes muchos 5. La CONSTANCIA (moda alta) importa más que un momento estelar."</div>
+    </div>
+
+    <div class="ficha">
+        <h3>📐 Productos Notables y Factorización</h3>
+        <h4>Productos Notables (de memoria):</h4>
+        <div class="formula-grid">
+            <div class="formula-item"><div class="nombre">Binomio al cuadrado +</div><div class="expr">(a+b)² = a²+2ab+b²</div></div>
+            <div class="formula-item"><div class="nombre">Binomio al cuadrado -</div><div class="expr">(a-b)² = a²-2ab+b²</div></div>
+            <div class="formula-item"><div class="nombre">Binomios conjugados</div><div class="expr">(a+b)(a-b) = a²-b²</div></div>
+        </div>
+        <h4>Factorización (el proceso inverso):</h4>
+        <table>
+            <tr><th>Tipo</th><th>Forma</th><th>Resultado</th></tr>
+            <tr><td>Factor común</td><td>6x²+12x</td><td>6x(x+2)</td></tr>
+            <tr><td>Diferencia de cuadrados</td><td>x²-25</td><td>(x+5)(x-5)</td></tr>
+            <tr><td>Trinomio cuadrado perfecto</td><td>x²+6x+9</td><td>(x+3)²</td></tr>
+            <tr><td>Trinomio x²+bx+c</td><td>x²+5x+6</td><td>(x+2)(x+3)</td></tr>
+        </table>
+        <div class="tip"><strong>💡 Truco para trinomio x²+bx+c:</strong> Busca dos números que SUMADOS den b y MULTIPLICADOS den c. Ej: x²+5x+6 → 2+3=5 y 2×3=6 → (x+2)(x+3)</div>
+        <div class="ejemplo"><strong>🌱 Mentoría:</strong> "Factorizar es simplificar algo complicado en partes más simples. En la vida, cuando un problema te abruma, divídelo en partes pequeñas y resuélvelas una por una."</div>
+    </div>
+
+    <div class="ficha dorado">
+        <h3>📐 Teorema de Pitágoras</h3>
+        <div class="formula">c² = a² + b² (hipotenusa² = cateto² + cateto²)</div>
+        <p>Solo funciona en triángulos RECTÁNGULOS (con ángulo de 90°).</p>
+        <div class="formula-grid">
+            <div class="formula-item"><div class="nombre">Hallar hipotenusa</div><div class="expr">c = √(a²+b²)</div></div>
+            <div class="formula-item"><div class="nombre">Hallar cateto</div><div class="expr">a = √(c²-b²)</div></div>
+        </div>
+        <div class="ejemplo"><strong>✅ Ternas pitagóricas (de memoria):</strong> 3-4-5 | 5-12-13 | 8-15-17 | 7-24-25</div>
+        <div class="tip"><strong>💡 Aplicación real:</strong> "Si una escalera de 5m se apoya a 3m de la pared, ¿a qué altura llega?" → √(5²-3²) = √(25-9) = √16 = 4m</div>
+    </div>
+
+    <div class="ficha verde">
+        <h3>📐 Trigonometría Básica</h3>
+        <div class="formula-grid">
+            <div class="formula-item"><div class="nombre">SENO</div><div class="expr">sen = Cateto Opuesto / Hipotenusa</div></div>
+            <div class="formula-item"><div class="nombre">COSENO</div><div class="expr">cos = Cateto Adyacente / Hipotenusa</div></div>
+            <div class="formula-item"><div class="nombre">TANGENTE</div><div class="expr">tan = Cateto Opuesto / Cateto Adyacente</div></div>
+        </div>
+        <div class="tip"><strong>💡 Mnemotécnica:</strong> <strong>SOH-CAH-TOA</strong><br>
+            <strong>S</strong>eno = <strong>O</strong>puesto / <strong>H</strong>ipotenusa<br>
+            <strong>C</strong>oseno = <strong>A</strong>dyacente / <strong>H</strong>ipotenusa<br>
+            <strong>T</strong>angente = <strong>O</strong>puesto / <strong>A</strong>dyacente
+        </div>
+        <h4>Valores que debes memorizar:</h4>
+        <table>
+            <tr><th>Ángulo</th><th>sen</th><th>cos</th><th>tan</th></tr>
+            <tr><td>30°</td><td>1/2</td><td>√3/2</td><td>√3/3</td></tr>
+            <tr><td>45°</td><td>√2/2</td><td>√2/2</td><td>1</td></tr>
+            <tr><td>60°</td><td>√3/2</td><td>1/2</td><td>√3</td></tr>
+            <tr><td>90°</td><td>1</td><td>0</td><td>∞</td></tr>
+        </table>
+    </div>
+</div>
+
+
+<!-- ===== SECCIÓN: ESPAÑOL ===== -->
+<div class="materia-section" id="sec-espanol">
+    <div class="ficha">
+        <h3>📖 Reglas de Acentuación</h3>
+        <table>
+            <tr><th>Tipo</th><th>Acento en</th><th>Se acentúa si</th><th>Ejemplos</th></tr>
+            <tr><td><strong>Aguda</strong></td><td>Última sílaba</td><td>Termina en N, S o vocal</td><td>can<strong>ción</strong>, ca<strong>fé</strong></td></tr>
+            <tr><td><strong>Grave</strong></td><td>Penúltima</td><td>NO termina en N, S o vocal</td><td><strong>ár</strong>bol, <strong>lá</strong>piz</td></tr>
+            <tr><td><strong>Esdrújula</strong></td><td>Antepenúltima</td><td>SIEMPRE</td><td><strong>plá</strong>tano, <strong>mú</strong>sica</td></tr>
+            <tr><td><strong>Sobresdrújula</strong></td><td>Antes de antepenúltima</td><td>SIEMPRE</td><td><strong>dí</strong>gamelo</td></tr>
+        </table>
+        <div class="tip"><strong>💡 Truco:</strong> "Las Graves son las más comunes en español. Si no lleva acento escrito, probablemente es grave."</div>
+        <div class="ejemplo"><strong>🌱 Mentoría:</strong> "Escribir bien no es ser 'nerd', es ser profesional. Un mensaje con buena ortografía dice mucho de ti antes de que te conozcan."</div>
+    </div>
+
+    <div class="ficha verde">
+        <h3>📖 Tipos de Texto</h3>
+        <table>
+            <tr><th>Tipo</th><th>Propósito</th><th>Estructura</th><th>Ejemplo</th></tr>
+            <tr><td><strong>Narrativo</strong></td><td>Contar historia</td><td>Inicio-desarrollo-desenlace</td><td>Cuento, novela, fábula</td></tr>
+            <tr><td><strong>Expositivo</strong></td><td>Informar</td><td>Intro-desarrollo-conclusión</td><td>Artículo, enciclopedia</td></tr>
+            <tr><td><strong>Argumentativo</strong></td><td>Convencer</td><td>Tesis-argumentos-conclusión</td><td>Ensayo, editorial</td></tr>
+            <tr><td><strong>Descriptivo</strong></td><td>Describir</td><td>Características, cualidades</td><td>Retrato, paisaje</td></tr>
+            <tr><td><strong>Instructivo</strong></td><td>Dar instrucciones</td><td>Pasos ordenados</td><td>Receta, manual</td></tr>
+        </table>
+        <div class="tip"><strong>💡 Para identificar:</strong> Pregunta: "¿Qué quiere lograr el autor? ¿Contar? ¿Informar? ¿Convencer? ¿Instruir?"</div>
+    </div>
+
+    <div class="ficha dorado">
+        <h3>📖 Figuras Retóricas (las más comunes)</h3>
+        <table>
+            <tr><th>Figura</th><th>Qué es</th><th>Ejemplo</th></tr>
+            <tr><td><strong>Metáfora</strong></td><td>Comparación SIN "como"</td><td>"Sus ojos son dos luceros"</td></tr>
+            <tr><td><strong>Símil</strong></td><td>Comparación CON "como"</td><td>"Veloz como el viento"</td></tr>
+            <tr><td><strong>Hipérbole</strong></td><td>Exageración</td><td>"Te lo dije un millón de veces"</td></tr>
+            <tr><td><strong>Anáfora</strong></td><td>Repetición al inicio</td><td>"Aquí fue... Aquí nació... Aquí vivió..."</td></tr>
+            <tr><td><strong>Onomatopeya</strong></td><td>Imita sonido</td><td>"Tic-tac", "Miau"</td></tr>
+            <tr><td><strong>Personificación</strong></td><td>Dar cualidades humanas a objetos</td><td>"El viento susurra"</td></tr>
+        </table>
+    </div>
+
+    <div class="ficha">
+        <h3>📖 Conectores y Nexos</h3>
+        <table>
+            <tr><th>Función</th><th>Conectores</th></tr>
+            <tr><td><strong>Adición</strong> (agregar)</td><td>además, también, asimismo, igualmente</td></tr>
+            <tr><td><strong>Contraste</strong> (pero)</td><td>sin embargo, no obstante, aunque, por el contrario</td></tr>
+            <tr><td><strong>Causa</strong> (porque)</td><td>porque, ya que, debido a, puesto que</td></tr>
+            <tr><td><strong>Consecuencia</strong> (por eso)</td><td>por lo tanto, en consecuencia, así que, por eso</td></tr>
+            <tr><td><strong>Tiempo</strong> (cuándo)</td><td>mientras, después, antes, finalmente, luego</td></tr>
+            <tr><td><strong>Conclusión</strong></td><td>en conclusión, en resumen, finalmente, en síntesis</td></tr>
+        </table>
+        <div class="ejemplo"><strong>🌱 Mentoría:</strong> "Los conectores son como los puentes entre ideas. En la vida, aprender a conectar tus pensamientos te ayuda a comunicarte mejor y a que la gente te entienda."</div>
+    </div>
+</div>
+
+<!-- ===== SECCIÓN: CIENCIAS ===== -->
+<div class="materia-section" id="sec-ciencias">
+    <div class="ficha">
+        <h3>🔬 Biología: La Célula</h3>
+        <table>
+            <tr><th>Organelo</th><th>Función</th><th>Analogía</th></tr>
+            <tr><td>Núcleo</td><td>Contiene ADN, dirige la célula</td><td>"El director de la fábrica"</td></tr>
+            <tr><td>Mitocondria</td><td>Produce energía (ATP)</td><td>"La planta de luz"</td></tr>
+            <tr><td>Ribosomas</td><td>Producen proteínas</td><td>"Los obreros"</td></tr>
+            <tr><td>Membrana</td><td>Controla qué entra y sale</td><td>"La puerta con vigilante"</td></tr>
+            <tr><td>Cloroplasto</td><td>Fotosíntesis (solo vegetal)</td><td>"El panel solar"</td></tr>
+            <tr><td>Retículo endoplásmico</td><td>Transporte interno</td><td>"Las carreteras"</td></tr>
+            <tr><td>Aparato de Golgi</td><td>Empaca y distribuye</td><td>"El correo/paquetería"</td></tr>
+        </table>
+        <div class="regla"><strong>⚠️ Diferencia clave:</strong> Célula VEGETAL tiene: pared celular + cloroplastos + vacuola grande. Célula ANIMAL no tiene estos.</div>
+    </div>
+
+    <div class="ficha verde">
+        <h3>🔬 Física: Leyes de Newton</h3>
+        <div class="formula-grid">
+            <div class="formula-item"><div class="nombre">1ra Ley (Inercia)</div><div class="expr">Un objeto en reposo sigue en reposo a menos que una fuerza actúe</div></div>
+            <div class="formula-item"><div class="nombre">2da Ley (F=ma)</div><div class="expr">F = masa × aceleración</div></div>
+            <div class="formula-item"><div class="nombre">3ra Ley (Acción-Reacción)</div><div class="expr">Toda fuerza tiene una igual y opuesta</div></div>
+        </div>
+        <div class="ejemplo"><strong>✅ Ejemplos cotidianos:</strong><br>
+            • 1ra: Cuando frena el camión, te vas para adelante (inercia)<br>
+            • 2da: Es más difícil empujar un carro que una bici (más masa = más fuerza)<br>
+            • 3ra: Cuando saltas, empujas al suelo y el suelo te empuja a ti
+        </div>
+        <div class="tip"><strong>💡 Unidades:</strong> Fuerza = Newton (N) | Masa = kg | Aceleración = m/s² | Gravedad = 9.8 m/s²</div>
+        <div class="ejemplo"><strong>🌱 Mentoría:</strong> "La primera ley de Newton aplica en tu vida: si no haces nada (no aplicas fuerza), nada cambiará. Para que tu vida se mueva, TÚ tienes que actuar."</div>
+    </div>
+
+    <div class="ficha dorado">
+        <h3>🔬 Química: Tabla Periódica y Reacciones</h3>
+        <h4>Tipos de reacciones:</h4>
+        <table>
+            <tr><th>Tipo</th><th>Forma</th><th>Ejemplo</th></tr>
+            <tr><td>Síntesis</td><td>A + B → AB</td><td>2H₂ + O₂ → 2H₂O</td></tr>
+            <tr><td>Descomposición</td><td>AB → A + B</td><td>2H₂O → 2H₂ + O₂</td></tr>
+            <tr><td>Sustitución simple</td><td>A + BC → AC + B</td><td>Fe + CuSO₄ → FeSO₄ + Cu</td></tr>
+            <tr><td>Doble sustitución</td><td>AB + CD → AD + CB</td><td>NaCl + AgNO₃ → NaNO₃ + AgCl</td></tr>
+            <tr><td>Combustión</td><td>Compuesto + O₂ → CO₂ + H₂O</td><td>CH₄ + 2O₂ → CO₂ + 2H₂O</td></tr>
+        </table>
+        <div class="regla"><strong>⚠️ Ley de conservación:</strong> Los átomos NO se crean ni se destruyen, solo se reorganizan. Por eso hay que BALANCEAR.</div>
+        <div class="tip"><strong>💡 pH rápido:</strong> Ácido < 7 < Base. Neutro = 7. Limón ≈ 2, Agua = 7, Jabón ≈ 10</div>
+    </div>
+
+    <div class="ficha">
+        <h3>🔬 Física: Electricidad (Ley de Ohm)</h3>
+        <div class="formula">V = I × R</div>
+        <div class="formula-grid">
+            <div class="formula-item"><div class="nombre">V = Voltaje</div><div class="expr">Volts (V) - "la presión"</div></div>
+            <div class="formula-item"><div class="nombre">I = Corriente</div><div class="expr">Amperes (A) - "el flujo"</div></div>
+            <div class="formula-item"><div class="nombre">R = Resistencia</div><div class="expr">Ohms (Ω) - "el obstáculo"</div></div>
+        </div>
+        <div class="tip"><strong>💡 Analogía del agua:</strong> El voltaje es la presión del agua. La corriente es cuánta agua fluye. La resistencia es qué tan angosta es la tubería.</div>
+        <div class="ejemplo"><strong>🌱 Mentoría:</strong> "En la vida, la resistencia (obstáculos) no detiene tu corriente (progreso), solo necesitas más voltaje (esfuerzo y motivación)."</div>
+    </div>
+</div>
+
+
+<!-- ===== SECCIÓN: HISTORIA ===== -->
+<div class="materia-section" id="sec-historia">
+    <div class="ficha">
+        <h3>📜 Línea del Tiempo: México</h3>
+        <table>
+            <tr><th>Periodo</th><th>Años</th><th>Dato clave</th></tr>
+            <tr><td>Conquista</td><td>1519-1521</td><td>Hernán Cortés conquista el imperio azteca</td></tr>
+            <tr><td>Virreinato</td><td>1521-1821</td><td>300 años de dominio español</td></tr>
+            <tr><td>Independencia</td><td>1810-1821</td><td>Hidalgo inicia, Iturbide consuma</td></tr>
+            <tr><td>México independiente</td><td>1821-1876</td><td>Inestabilidad, guerras, Reforma</td></tr>
+            <tr><td>Porfiriato</td><td>1876-1910</td><td>Porfirio Díaz 30 años, modernización con desigualdad</td></tr>
+            <tr><td>Revolución</td><td>1910-1920</td><td>Madero, Zapata, Villa, Constitución 1917</td></tr>
+            <tr><td>México moderno</td><td>1920-presente</td><td>PRI 70 años, democracia, globalización</td></tr>
+        </table>
+        <div class="tip"><strong>💡 Para enseñar:</strong> Cuenta cada periodo como un "capítulo de una serie". ¿Quién es el protagonista? ¿Qué problema enfrenta? ¿Cómo termina?</div>
+        <div class="ejemplo"><strong>🌱 Mentoría:</strong> "México ha pasado por muchas crisis y siempre se ha levantado. Tú también puedes superar cualquier dificultad. La historia nos enseña que todo es temporal."</div>
+    </div>
+
+    <div class="ficha verde">
+        <h3>📜 Línea del Tiempo: Mundo</h3>
+        <table>
+            <tr><th>Evento</th><th>Año</th><th>Importancia</th></tr>
+            <tr><td>Revolución Francesa</td><td>1789</td><td>Libertad, igualdad, fraternidad. Fin del absolutismo</td></tr>
+            <tr><td>Revolución Industrial</td><td>1760-1840</td><td>Máquinas, fábricas, urbanización</td></tr>
+            <tr><td>Primera Guerra Mundial</td><td>1914-1918</td><td>Muerte del archiduque, trincheras, Tratado de Versalles</td></tr>
+            <tr><td>Revolución Rusa</td><td>1917</td><td>Caída del zar, nace la URSS (comunismo)</td></tr>
+            <tr><td>Segunda Guerra Mundial</td><td>1939-1945</td><td>Hitler, Holocausto, bombas atómicas, nace la ONU</td></tr>
+            <tr><td>Guerra Fría</td><td>1947-1991</td><td>USA vs URSS, carrera espacial, muro de Berlín</td></tr>
+            <tr><td>Caída del Muro</td><td>1989</td><td>Fin del comunismo en Europa</td></tr>
+            <tr><td>Globalización</td><td>1990-presente</td><td>Internet, comercio global, redes sociales</td></tr>
+        </table>
+    </div>
+
+    <div class="ficha dorado">
+        <h3>📜 Artículos Constitucionales Clave (1917)</h3>
+        <table>
+            <tr><th>Art.</th><th>Tema</th><th>Qué dice (resumen)</th></tr>
+            <tr><td>3°</td><td>Educación</td><td>Gratuita, laica y obligatoria</td></tr>
+            <tr><td>27°</td><td>Propiedad</td><td>La tierra y recursos son de la nación</td></tr>
+            <tr><td>123°</td><td>Trabajo</td><td>Jornada 8 hrs, salario mínimo, derecho a huelga</td></tr>
+            <tr><td>130°</td><td>Iglesia-Estado</td><td>Separación iglesia del gobierno</td></tr>
+        </table>
+        <div class="ejemplo"><strong>🌱 Mentoría:</strong> "Conocer tus derechos te empodera. El artículo 3° dice que tienes derecho a educación gratuita. Nadie te puede quitar eso. ¿Qué otros derechos conoces?"</div>
+    </div>
+</div>
+
+
+<!-- ===== SECCIÓN: INGLÉS ===== -->
+<div class="materia-section" id="sec-ingles">
+    <div class="ficha">
+        <h3>🇬🇧 Tiempos Verbales (Resumen Completo)</h3>
+        <table>
+            <tr><th>Tiempo</th><th>Estructura</th><th>Uso</th><th>Ejemplo</th></tr>
+            <tr><td><strong>Present Simple</strong></td><td>S + verb (s/es)</td><td>Rutinas, hábitos</td><td>She plays soccer.</td></tr>
+            <tr><td><strong>Present Continuous</strong></td><td>S + am/is/are + verb-ing</td><td>Ahora mismo</td><td>She is playing.</td></tr>
+            <tr><td><strong>Past Simple</strong></td><td>S + verb-ed / irregular</td><td>Acción pasada terminada</td><td>She played yesterday.</td></tr>
+            <tr><td><strong>Past Continuous</strong></td><td>S + was/were + verb-ing</td><td>Acción en progreso en el pasado</td><td>She was playing at 5pm.</td></tr>
+            <tr><td><strong>Future (will)</strong></td><td>S + will + verb</td><td>Predicciones, decisiones espontáneas</td><td>She will play tomorrow.</td></tr>
+            <tr><td><strong>Future (going to)</strong></td><td>S + am/is/are going to + verb</td><td>Planes decididos</td><td>She is going to play.</td></tr>
+            <tr><td><strong>Present Perfect</strong></td><td>S + have/has + past participle</td><td>Experiencias, acciones sin tiempo específico</td><td>She has played tennis.</td></tr>
+        </table>
+        <div class="tip"><strong>💡 Para enseñar tiempos:</strong> Dibuja una línea del tiempo: PASADO ← PRESENTE → FUTURO. Ubica cada tiempo en la línea.</div>
+    </div>
+
+    <div class="ficha verde">
+        <h3>🇬🇧 Verbos Irregulares (los más importantes)</h3>
+        <table>
+            <tr><th>Base</th><th>Past</th><th>Participle</th><th>Significado</th></tr>
+            <tr><td>be</td><td>was/were</td><td>been</td><td>ser/estar</td></tr>
+            <tr><td>go</td><td>went</td><td>gone</td><td>ir</td></tr>
+            <tr><td>have</td><td>had</td><td>had</td><td>tener</td></tr>
+            <tr><td>do</td><td>did</td><td>done</td><td>hacer</td></tr>
+            <tr><td>see</td><td>saw</td><td>seen</td><td>ver</td></tr>
+            <tr><td>eat</td><td>ate</td><td>eaten</td><td>comer</td></tr>
+            <tr><td>write</td><td>wrote</td><td>written</td><td>escribir</td></tr>
+            <tr><td>buy</td><td>bought</td><td>bought</td><td>comprar</td></tr>
+            <tr><td>take</td><td>took</td><td>taken</td><td>tomar</td></tr>
+            <tr><td>give</td><td>gave</td><td>given</td><td>dar</td></tr>
+            <tr><td>know</td><td>knew</td><td>known</td><td>saber</td></tr>
+            <tr><td>think</td><td>thought</td><td>thought</td><td>pensar</td></tr>
+            <tr><td>say</td><td>said</td><td>said</td><td>decir</td></tr>
+            <tr><td>make</td><td>made</td><td>made</td><td>hacer/fabricar</td></tr>
+            <tr><td>get</td><td>got</td><td>got/gotten</td><td>obtener</td></tr>
+        </table>
+        <div class="tip"><strong>💡 Truco:</strong> Aprende de 3 en 3 por semana. Haz flashcards. Que los USE en oraciones, no solo los memorice.</div>
+        <div class="ejemplo"><strong>🌱 Mentoría:</strong> "El inglés parece difícil porque tiene excepciones (verbos irregulares). La vida también tiene excepciones a las reglas. Lo importante es no rendirse y seguir practicando."</div>
+    </div>
+</div>
+
+
+<!-- ===== SECCIÓN: MENTORÍA DE VIDA ===== -->
+<div class="materia-section" id="sec-mentoria">
+    <div class="ficha dorado">
+        <h3>🌱 Ejercicios de Mentoría por Tema</h3>
+        <p>Usa estos ejercicios al inicio o final de cada clase (5-10 minutos).</p>
+    </div>
+
+    <div class="ficha verde">
+        <h3>🌱 1. La Rueda de la Vida (Diagnóstico inicial)</h3>
+        <p><strong>Cuándo usarlo:</strong> Primera sesión con un alumno nuevo.</p>
+        <p><strong>Cómo:</strong> Dibuja un círculo dividido en 8 partes. El alumno califica del 1 al 10 cada área:</p>
+        <ul>
+            <li>Escuela / Calificaciones</li>
+            <li>Familia</li>
+            <li>Amigos</li>
+            <li>Salud / Ejercicio</li>
+            <li>Diversión / Hobbies</li>
+            <li>Autoestima / Confianza</li>
+            <li>Metas / Futuro</li>
+            <li>Emociones / Cómo me siento</li>
+        </ul>
+        <p><strong>Pregunta clave:</strong> "¿En cuál te gustaría mejorar primero? ¿Qué pequeño paso podrías dar esta semana?"</p>
+        <div class="tip"><strong>💡 Basado en:</strong> Herramienta profesional de life coaching adaptada para adolescentes (Wheel of Life - fuente: positivepsychology.com)</div>
+    </div>
+
+    <div class="ficha">
+        <h3>🌱 2. Mis 3 Victorias de la Semana</h3>
+        <p><strong>Cuándo:</strong> Al inicio de cada sesión (2 min).</p>
+        <p><strong>Cómo:</strong> El alumno dice 3 cosas que le salieron bien esta semana (por pequeñas que sean).</p>
+        <p><strong>Ejemplos:</strong> "Entregué una tarea a tiempo", "Ayudé a mi mamá", "Entendí un tema que no podía"</p>
+        <p><strong>Por qué funciona:</strong> Entrena al cerebro a buscar lo positivo. Mejora autoestima y motivación.</p>
+        <div class="tip"><strong>💡 Si dice "nada me salió bien":</strong> Ayúdalo a encontrar algo: "¿Viniste a clase hoy? Eso ya es una victoria."</div>
+    </div>
+
+    <div class="ficha verde">
+        <h3>🌱 3. El Termómetro Emocional</h3>
+        <p><strong>Cuándo:</strong> Al inicio de cada sesión (1 min).</p>
+        <p><strong>Cómo:</strong> "Del 1 al 10, ¿cómo te sientes hoy?" Si es menos de 5, dedica unos minutos a escucharlo antes de la clase.</p>
+        <p><strong>Por qué:</strong> Un alumno angustiado no aprende. Si detectas que está mal, primero atiende la emoción.</p>
+        <div class="regla"><strong>⚠️ Importante:</strong> No eres psicólogo. Si detectas algo grave (autolesión, abuso, depresión severa), orienta a los padres para buscar ayuda profesional.</div>
+    </div>
+
+    <div class="ficha dorado">
+        <h3>🌱 4. Metas SMART para la Semana</h3>
+        <p><strong>Cuándo:</strong> Al final de cada sesión (3 min).</p>
+        <p><strong>Cómo:</strong> El alumno define UNA meta para la siguiente semana que sea:</p>
+        <ul>
+            <li><strong>S</strong>pecífica - "Hacer los ejercicios de la página 45"</li>
+            <li><strong>M</strong>edible - "Hacer 10 ejercicios"</li>
+            <li><strong>A</strong>lcanzable - "Puedo hacerlo en 30 min"</li>
+            <li><strong>R</strong>elevante - "Me ayudará para el extraordinario"</li>
+            <li><strong>T</strong>emporal - "Antes del jueves"</li>
+        </ul>
+        <p><strong>Seguimiento:</strong> La siguiente sesión preguntar: "¿Cumpliste tu meta? Si no, ¿qué pasó? ¿Cómo lo resolvemos?"</p>
+    </div>
+
+    <div class="ficha">
+        <h3>🌱 5. "¿Para qué me sirve esto?"</h3>
+        <p><strong>Cuándo:</strong> Cuando el alumno dice "esto no sirve para nada" (y LO VA A DECIR).</p>
+        <p><strong>Cómo:</strong> En vez de enojarte, valida y redirige:</p>
+        <ul>
+            <li>"Entiendo que no le ves utilidad AHORA. Déjame mostrarte dónde se usa..."</li>
+            <li><strong>Matemáticas:</strong> "¿Quieres tener negocio propio? Necesitas porcentajes, costos, ganancias."</li>
+            <li><strong>Español:</strong> "¿Quieres que te tomen en serio? Alguien que se expresa bien gana más."</li>
+            <li><strong>Ciencias:</strong> "¿Quieres entender cómo funciona TU cuerpo y el mundo?"</li>
+            <li><strong>Historia:</strong> "¿Quieres votar bien y que no te manipulen? Necesitas contexto."</li>
+            <li><strong>Inglés:</strong> "¿Quieres ganar más dinero? Quien habla inglés gana 30-50% más."</li>
+        </ul>
+    </div>
+
+    <div class="ficha verde">
+        <h3>🌱 6. Hábitos de Estudio</h3>
+        <p><strong>Enseña estas técnicas a cada alumno:</strong></p>
+        <table>
+            <tr><th>Técnica</th><th>Cómo</th><th>Para qué</th></tr>
+            <tr><td>Pomodoro</td><td>25 min estudio + 5 min descanso</td><td>Mantener concentración</td></tr>
+            <tr><td>Lugar fijo</td><td>Siempre estudiar en el mismo lugar</td><td>El cerebro asocia lugar = estudio</td></tr>
+            <tr><td>Sin celular</td><td>Dejarlo en otra habitación mientras estudia</td><td>Eliminar distracciones</td></tr>
+            <tr><td>Enseñar a otro</td><td>Explicar el tema como si fuera maestro</td><td>Si lo explicas, lo dominas</td></tr>
+            <tr><td>Antes de dormir</td><td>Repasar 10 min antes de dormir</td><td>Se fija mejor en la memoria</td></tr>
+        </table>
+        <div class="ejemplo"><strong>🌱 Frase para el alumno:</strong> "No se trata de estudiar más horas, sino de estudiar MEJOR. 30 minutos enfocado vale más que 3 horas con el celular al lado."</div>
+    </div>
+
+    <div class="ficha dorado">
+        <h3>🌱 7. Reflexión de Cierre (para CADA sesión)</h3>
+        <p><strong>Últimos 3-5 minutos, haz estas preguntas:</strong></p>
+        <ol>
+            <li>"¿Qué aprendiste hoy que no sabías antes?"</li>
+            <li>"¿Qué fue lo más difícil? ¿Cómo lo resolviste?"</li>
+            <li>"Del 1 al 10, ¿cómo te sientes con este tema ahora?"</li>
+            <li>"¿Qué vas a hacer diferente esta semana?"</li>
+        </ol>
+        <div class="tip"><strong>💡 Por qué funciona:</strong> La reflexión metacognitiva (pensar sobre lo que aprendiste) duplica la retención. No es pérdida de tiempo, es la parte más valiosa.</div>
+    </div>
+</div>
+
+</div><!-- fin container -->
+</div><!-- fin contenido-guia -->
+
+
+<script>
+    const CLAVE = "0310Yani0516";
+
+    function acceder() {
+        const input = document.getElementById('clave-tutor').value;
+        if (input === CLAVE) {
+            document.getElementById('pantalla-clave').style.display = 'none';
+            document.getElementById('contenido-guia').style.display = 'block';
+        } else {
+            document.getElementById('error-clave').style.display = 'block';
+            document.getElementById('clave-tutor').value = '';
+        }
+    }
+
+    function showMateria(nombre) {
+        document.querySelectorAll('.materia-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-materias button').forEach(b => b.classList.remove('active'));
+        document.getElementById('sec-' + nombre).classList.add('active');
+        document.getElementById('nav-' + nombre).classList.add('active');
+    }
+
+    function filtrar() {
+        const busqueda = document.getElementById('buscar').value.toLowerCase();
+        const fichas = document.querySelectorAll('.ficha');
+        if (busqueda.length < 2) {
+            fichas.forEach(f => f.style.display = 'block');
+            return;
+        }
+        // Mostrar todas las secciones para buscar
+        document.querySelectorAll('.materia-section').forEach(s => s.classList.add('active'));
+        fichas.forEach(f => {
+            if (f.textContent.toLowerCase().includes(busqueda)) {
+                f.style.display = 'block';
+            } else {
+                f.style.display = 'none';
+            }
+        });
+    }
+</script>
+</body>
+</html>
