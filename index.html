@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material para Extraordinarios - Secundaria</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; color: #333; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }
+        .header h1 { font-size: 1.8em; margin-bottom: 5px; }
+        .header p { opacity: 0.9; font-size: 0.95em; }
+        .nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 15px; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .nav button { padding: 10px 20px; border: 2px solid #667eea; background: white; color: #667eea; border-radius: 25px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        .nav button:hover, .nav button.active { background: #667eea; color: white; }
+        .container { max-width: 900px; margin: 20px auto; padding: 0 15px; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .card { background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 3px 15px rgba(0,0,0,0.08); }
+        .card h2 { color: #667eea; margin-bottom: 15px; }
+        select, button.btn { padding: 10px 15px; border-radius: 8px; border: 1px solid #ddd; font-size: 1em; margin: 5px; }
+        button.btn { background: #667eea; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button.btn:hover { background: #5a6fd6; }
+        button.btn-success { background: #27ae60; }
+        button.btn-danger { background: #e74c3c; }
+        .exercise { background: #f8f9ff; border-left: 4px solid #667eea; padding: 15px; margin: 10px 0; border-radius: 0 8px 8px 0; }
+        .exercise h4 { margin-bottom: 8px; }
+        .options label { display: block; padding: 8px 12px; margin: 5px 0; background: white; border-radius: 6px; cursor: pointer; border: 1px solid #eee; }
+        .options label:hover { background: #f0f4ff; }
+        .correct { background: #d4edda !important; border-color: #27ae60 !important; }
+        .incorrect { background: #f8d7da !important; border-color: #e74c3c !important; }
+        .timer { font-size: 2em; text-align: center; color: #e74c3c; font-weight: bold; margin: 15px 0; }
+        .score { font-size: 1.5em; text-align: center; padding: 20px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 12px; margin: 15px 0; }
+        .print-only { display: none; }
+        @media print { .no-print { display: none !important; } .print-only { display: block !important; } body { background: white; } .card { box-shadow: none; border: 1px solid #ddd; } }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+        .progress-bar { width: 100%; height: 10px; background: #eee; border-radius: 5px; overflow: hidden; margin: 10px 0; }
+        .progress-bar .fill { height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); transition: width 0.3s; }
+        .tag { display: inline-block; padding: 3px 10px; background: #667eea22; color: #667eea; border-radius: 12px; font-size: 0.8em; margin: 2px; }
+    </style>
+</head>
+<body>
+
+
+<div class="header">
+    <h1>📚 Material para Extraordinarios</h1>
+    <p>Secundaria - 1°, 2° y 3° grado | Todas las materias</p>
+</div>
+
+<div class="nav no-print">
+    <button onclick="showSection('generador')" class="active" id="nav-generador">🎲 Generador de Ejercicios</button>
+    <button onclick="showSection('diagnostico')" id="nav-diagnostico">🔍 Examen Diagnóstico</button>
+    <button onclick="showSection('simulador')" id="nav-simulador">⏱️ Simulador de Examen</button>
+    <button onclick="showSection('hojas')" id="nav-hojas">📄 Hojas de Trabajo</button>
+</div>
+
+<div class="container">
+
+
+<!-- SECCIÓN 1: GENERADOR DE EJERCICIOS -->
+<div class="section active" id="sec-generador">
+    <div class="card">
+        <h2>🎲 Generador de Ejercicios</h2>
+        <p>Selecciona materia, grado y tema para generar ejercicios aleatorios.</p>
+        <br>
+        <div class="grid-2">
+            <div>
+                <label><strong>Materia:</strong></label><br>
+                <select id="gen-materia" onchange="updateTemas()">
+                    <option value="matematicas">Matemáticas</option>
+                    <option value="espanol">Español</option>
+                    <option value="ciencias">Ciencias</option>
+                    <option value="historia">Historia</option>
+                    <option value="ingles">Inglés</option>
+                </select>
+            </div>
+            <div>
+                <label><strong>Grado:</strong></label><br>
+                <select id="gen-grado">
+                    <option value="1">1° Secundaria</option>
+                    <option value="2">2° Secundaria</option>
+                    <option value="3">3° Secundaria</option>
+                </select>
+            </div>
+        </div>
+        <div>
+            <label><strong>Tema:</strong></label><br>
+            <select id="gen-tema"></select>
+        </div>
+        <div>
+            <label><strong>Cantidad de ejercicios:</strong></label><br>
+            <select id="gen-cantidad">
+                <option value="5">5 ejercicios</option>
+                <option value="10" selected>10 ejercicios</option>
+                <option value="15">15 ejercicios</option>
+                <option value="20">20 ejercicios</option>
+            </select>
+        </div>
+        <br>
+        <button class="btn" onclick="generarEjercicios()">✨ Generar Ejercicios</button>
+        <button class="btn btn-success" onclick="window.print()">🖨️ Imprimir</button>
+    </div>
+    <div id="ejercicios-output"></div>
+</div>
+
+
+<!-- SECCIÓN 2: EXAMEN DIAGNÓSTICO -->
+<div class="section" id="sec-diagnostico">
+    <div class="card">
+        <h2>🔍 Examen Diagnóstico</h2>
+        <p>Evalúa en qué temas necesita refuerzo el alumno. Al finalizar se muestra un reporte de fortalezas y debilidades.</p>
+        <br>
+        <div class="grid-2">
+            <div>
+                <label><strong>Materia:</strong></label><br>
+                <select id="diag-materia">
+                    <option value="matematicas">Matemáticas</option>
+                    <option value="espanol">Español</option>
+                    <option value="ciencias">Ciencias</option>
+                </select>
+            </div>
+            <div>
+                <label><strong>Grado:</strong></label><br>
+                <select id="diag-grado">
+                    <option value="1">1° Secundaria</option>
+                    <option value="2">2° Secundaria</option>
+                    <option value="3">3° Secundaria</option>
+                </select>
+            </div>
+        </div>
+        <br>
+        <button class="btn" onclick="iniciarDiagnostico()">🚀 Iniciar Diagnóstico</button>
+    </div>
+    <div id="diagnostico-output"></div>
+</div>
+
+
+<!-- SECCIÓN 3: SIMULADOR DE EXAMEN -->
+<div class="section" id="sec-simulador">
+    <div class="card">
+        <h2>⏱️ Simulador de Examen Extraordinario</h2>
+        <p>Simula un examen real con temporizador. Practica bajo presión como en el examen real.</p>
+        <br>
+        <div class="grid-2">
+            <div>
+                <label><strong>Materia:</strong></label><br>
+                <select id="sim-materia">
+                    <option value="matematicas">Matemáticas</option>
+                    <option value="espanol">Español</option>
+                    <option value="ciencias">Ciencias</option>
+                    <option value="historia">Historia</option>
+                    <option value="ingles">Inglés</option>
+                </select>
+            </div>
+            <div>
+                <label><strong>Grado:</strong></label><br>
+                <select id="sim-grado">
+                    <option value="1">1° Secundaria</option>
+                    <option value="2">2° Secundaria</option>
+                    <option value="3">3° Secundaria</option>
+                </select>
+            </div>
+        </div>
+        <div>
+            <label><strong>Tiempo (minutos):</strong></label><br>
+            <select id="sim-tiempo">
+                <option value="30">30 minutos</option>
+                <option value="45" selected>45 minutos</option>
+                <option value="60">60 minutos</option>
+                <option value="90">90 minutos</option>
+            </select>
+        </div>
+        <br>
+        <button class="btn" onclick="iniciarSimulador()">▶️ Iniciar Examen</button>
+    </div>
+    <div id="simulador-output"></div>
+</div>
+
+
+<!-- SECCIÓN 4: HOJAS DE TRABAJO -->
+<div class="section" id="sec-hojas">
+    <div class="card">
+        <h2>📄 Hojas de Trabajo para Imprimir</h2>
+        <p>Material listo para imprimir organizado por materia y tema. Ideal para dejar de tarea.</p>
+        <br>
+        <div class="grid-2">
+            <div>
+                <label><strong>Materia:</strong></label><br>
+                <select id="hoja-materia" onchange="updateHojaTemas()">
+                    <option value="matematicas">Matemáticas</option>
+                    <option value="espanol">Español</option>
+                    <option value="ciencias">Ciencias</option>
+                </select>
+            </div>
+            <div>
+                <label><strong>Grado:</strong></label><br>
+                <select id="hoja-grado">
+                    <option value="1">1° Secundaria</option>
+                    <option value="2">2° Secundaria</option>
+                    <option value="3">3° Secundaria</option>
+                </select>
+            </div>
+        </div>
+        <div>
+            <label><strong>Tema:</strong></label><br>
+            <select id="hoja-tema"></select>
+        </div>
+        <br>
+        <button class="btn" onclick="generarHoja()">📝 Generar Hoja de Trabajo</button>
+        <button class="btn btn-success" onclick="window.print()">🖨️ Imprimir</button>
+    </div>
+    <div id="hojas-output"></div>
+</div>
+
+</div><!-- fin container -->
+
+
+<script>
+// ============ BASE DE DATOS DE TEMAS ============
+const temas = {
+    matematicas: {
+        1: ["Números enteros y operaciones", "Fracciones y decimales", "Proporcionalidad", "Ecuaciones lineales", "Geometría básica", "Perímetro y área", "Estadística básica"],
+        2: ["Productos notables", "Factorización", "Ecuaciones cuadráticas", "Sistemas de ecuaciones", "Teorema de Pitágoras", "Volumen de cuerpos", "Probabilidad"],
+        3: ["Funciones lineales", "Funciones cuadráticas", "Trigonometría", "Semejanza y congruencia", "Estadística y probabilidad", "Sucesiones", "Expresiones algebraicas"]
+    },
+    espanol: {
+        1: ["Comprensión lectora", "Tipos de texto", "Ortografía y acentuación", "Sinónimos y antónimos", "El cuento y la novela", "Signos de puntuación", "Verbos y conjugaciones"],
+        2: ["Análisis literario", "Textos expositivos", "Argumentación", "Figuras retóricas", "Nexos y conectores", "Redacción de ensayos", "Modos verbales"],
+        3: ["Textos argumentativos", "Análisis poético", "Investigación documental", "Variantes del español", "Géneros periodísticos", "Reseña crítica", "Coherencia y cohesión"]
+    },
+    ciencias: {
+        1: ["Célula y sus funciones", "Sistemas del cuerpo humano", "Nutrición y alimentación", "Reproducción", "Biodiversidad", "Ecosistemas", "Evolución"],
+        2: ["Materia y sus propiedades", "Mezclas y sustancias puras", "Tabla periódica", "Enlaces químicos", "Reacciones químicas", "Ácidos y bases", "Energía y movimiento"],
+        3: ["Movimiento y fuerza", "Leyes de Newton", "Energía y trabajo", "Electricidad", "Magnetismo", "Ondas y sonido", "Óptica y luz"]
+    },
+    historia: {
+        1: ["Civilizaciones antiguas", "Edad Media", "Renacimiento", "Descubrimiento de América", "Conquista de México", "Virreinato", "Ilustración"],
+        2: ["Independencia de México", "México independiente", "Reforma y República", "Porfiriato", "Revolución Mexicana", "México posrevolucionario", "México contemporáneo"],
+        3: ["Primera Guerra Mundial", "Revolución Rusa", "Segunda Guerra Mundial", "Guerra Fría", "Globalización", "México en el mundo actual", "Movimientos sociales"]
+    },
+    ingles: {
+        1: ["Verb to be", "Present simple", "There is/there are", "Can/Can't", "Present continuous", "Prepositions", "Vocabulary: family and school"],
+        2: ["Past simple", "Past continuous", "Comparative/Superlative", "Future (will/going to)", "Modal verbs", "Connectors", "Reading comprehension"],
+        3: ["Present perfect", "Conditionals", "Passive voice", "Reported speech", "Relative clauses", "Phrasal verbs", "Writing skills"]
+    }
+};
+
+
+// ============ BANCO DE EJERCICIOS ============
+const ejerciciosDB = {
+    matematicas: {
+        "Números enteros y operaciones": [
+            {p: "Resuelve: (-5) + (-3) =", o: ["-8", "-2", "8", "2"], r: 0},
+            {p: "Resuelve: (-12) × (3) =", o: ["-36", "36", "-4", "15"], r: 0},
+            {p: "Resuelve: 15 - (-7) =", o: ["22", "8", "-22", "7"], r: 0},
+            {p: "¿Cuál es el valor absoluto de -15?", o: ["15", "-15", "0", "1"], r: 0},
+            {p: "Resuelve: (-8) ÷ (-2) =", o: ["4", "-4", "6", "-6"], r: 0},
+            {p: "Ordena de menor a mayor: -3, 5, -7, 2", o: ["-7, -3, 2, 5", "-3, -7, 2, 5", "2, 5, -3, -7", "5, 2, -3, -7"], r: 0},
+            {p: "Resuelve: (-4)² =", o: ["16", "-16", "8", "-8"], r: 0},
+            {p: "Resuelve: 20 ÷ (-5) + 3 =", o: ["-1", "1", "-7", "7"], r: 0},
+            {p: "¿Qué número es el opuesto de 9?", o: ["-9", "9", "0", "1/9"], r: 0},
+            {p: "Resuelve: (-2) × (-3) × (-1) =", o: ["-6", "6", "-1", "1"], r: 0}
+        ],
+        "Fracciones y decimales": [
+            {p: "Resuelve: 1/2 + 1/3 =", o: ["5/6", "2/5", "1/5", "3/6"], r: 0},
+            {p: "Resuelve: 3/4 - 1/2 =", o: ["1/4", "2/4", "1/2", "3/8"], r: 0},
+            {p: "Resuelve: 2/3 × 3/4 =", o: ["1/2", "6/7", "5/12", "2/4"], r: 0},
+            {p: "Convierte 0.75 a fracción:", o: ["3/4", "7/5", "3/5", "7/10"], r: 0},
+            {p: "Resuelve: 5/6 ÷ 2/3 =", o: ["5/4", "10/18", "3/4", "2/5"], r: 0},
+            {p: "¿Cuál fracción es equivalente a 2/5?", o: ["4/10", "3/6", "2/10", "5/2"], r: 0},
+            {p: "Convierte 3/8 a decimal:", o: ["0.375", "0.38", "0.333", "0.83"], r: 0},
+            {p: "Resuelve: 1.5 + 2.75 =", o: ["4.25", "4.15", "3.25", "4.75"], r: 0},
+            {p: "Simplifica 12/16:", o: ["3/4", "6/8", "4/3", "2/4"], r: 0},
+            {p: "Resuelve: 0.5 × 0.4 =", o: ["0.20", "0.9", "2.0", "0.45"], r: 0}
+        ],
+        "Proporcionalidad": [
+            {p: "Si 3 kg cuestan $45, ¿cuánto cuestan 5 kg?", o: ["$75", "$60", "$90", "$50"], r: 0},
+            {p: "Si un auto recorre 120 km en 2 horas, ¿cuánto recorre en 5 horas?", o: ["300 km", "240 km", "360 km", "200 km"], r: 0},
+            {p: "¿Cuál es el 20% de 150?", o: ["30", "20", "25", "35"], r: 0},
+            {p: "Si 4 obreros hacen un trabajo en 6 días, ¿en cuántos días lo hacen 8 obreros?", o: ["3 días", "12 días", "4 días", "2 días"], r: 0},
+            {p: "Completa la proporción: 2/5 = x/20", o: ["8", "10", "4", "6"], r: 0},
+            {p: "Un artículo cuesta $200 y tiene 15% de descuento. ¿Cuánto pagas?", o: ["$170", "$185", "$175", "$180"], r: 0},
+            {p: "Si 6 es a 9, como 10 es a:", o: ["15", "12", "14", "13"], r: 0},
+            {p: "¿Cuánto es el 150% de 80?", o: ["120", "100", "130", "160"], r: 0}
+        ],
+        "Ecuaciones lineales": [
+            {p: "Resuelve: 2x + 5 = 15", o: ["x = 5", "x = 10", "x = 7", "x = 3"], r: 0},
+            {p: "Resuelve: 3x - 7 = 14", o: ["x = 7", "x = 3", "x = 21", "x = 5"], r: 0},
+            {p: "Resuelve: x/4 = 8", o: ["x = 32", "x = 2", "x = 12", "x = 16"], r: 0},
+            {p: "Resuelve: 5x + 3 = 2x + 12", o: ["x = 3", "x = 5", "x = 9", "x = 15"], r: 0},
+            {p: "Resuelve: 4(x - 2) = 20", o: ["x = 7", "x = 5", "x = 3", "x = 8"], r: 0},
+            {p: "Resuelve: -2x + 8 = 0", o: ["x = 4", "x = -4", "x = 8", "x = -8"], r: 0},
+            {p: "Resuelve: x + x + x = 27", o: ["x = 9", "x = 3", "x = 27", "x = 18"], r: 0},
+            {p: "Si 2(x+3) = x+10, entonces x =", o: ["4", "7", "3", "5"], r: 0}
+        ],
+        "Productos notables": [
+            {p: "Desarrolla: (x + 3)² =", o: ["x² + 6x + 9", "x² + 9", "x² + 3x + 9", "2x + 6"], r: 0},
+            {p: "Desarrolla: (x - 4)² =", o: ["x² - 8x + 16", "x² - 16", "x² - 4x + 16", "x² + 8x + 16"], r: 0},
+            {p: "Desarrolla: (x + 5)(x - 5) =", o: ["x² - 25", "x² + 25", "x² - 10x + 25", "2x"], r: 0},
+            {p: "Desarrolla: (2x + 1)² =", o: ["4x² + 4x + 1", "2x² + 2x + 1", "4x² + 1", "4x² + 2x + 1"], r: 0},
+            {p: "Desarrolla: (x + 2)(x + 3) =", o: ["x² + 5x + 6", "x² + 6x + 5", "x² + 5x + 5", "2x + 5"], r: 0},
+            {p: "¿Cuál es el producto notable de (a+b)(a-b)?", o: ["a² - b²", "a² + b²", "2ab", "a² - 2ab + b²"], r: 0},
+            {p: "Desarrolla: (3x - 2)² =", o: ["9x² - 12x + 4", "9x² - 4", "3x² - 12x + 4", "9x² + 12x + 4"], r: 0}
+        ],
+        "Factorización": [
+            {p: "Factoriza: x² - 9 =", o: ["(x+3)(x-3)", "(x-9)(x+1)", "(x+9)(x-1)", "(x-3)²"], r: 0},
+            {p: "Factoriza: x² + 5x + 6 =", o: ["(x+2)(x+3)", "(x+1)(x+6)", "(x+5)(x+1)", "(x-2)(x-3)"], r: 0},
+            {p: "Factoriza: 2x² + 4x =", o: ["2x(x+2)", "2(x²+4x)", "x(2x+4)", "4x(x+1)"], r: 0},
+            {p: "Factoriza: x² - 7x + 12 =", o: ["(x-3)(x-4)", "(x-2)(x-6)", "(x+3)(x+4)", "(x-1)(x-12)"], r: 0},
+            {p: "Factoriza: x² - 16 =", o: ["(x+4)(x-4)", "(x-8)(x+2)", "(x-16)(x+1)", "(x+8)(x-2)"], r: 0},
+            {p: "Factoriza: x² + 2x + 1 =", o: ["(x+1)²", "(x+2)(x-1)", "(x-1)²", "(x+1)(x-1)"], r: 0},
+            {p: "Factoriza: 3x³ - 9x² =", o: ["3x²(x-3)", "3x(x²-3)", "9x²(x-1)", "3(x³-3x²)"], r: 0}
+        ],
+        "Ecuaciones cuadráticas": [
+            {p: "Resuelve: x² - 4 = 0", o: ["x = 2, x = -2", "x = 4", "x = 2", "x = -4, x = 4"], r: 0},
+            {p: "Resuelve: x² + 5x + 6 = 0", o: ["x = -2, x = -3", "x = 2, x = 3", "x = -1, x = -6", "x = 1, x = 6"], r: 0},
+            {p: "Resuelve: x² - 9 = 0", o: ["x = 3, x = -3", "x = 9, x = -9", "x = 3", "x = 81"], r: 0},
+            {p: "¿Cuántas soluciones tiene x² + 1 = 0 en los reales?", o: ["Ninguna", "Una", "Dos", "Infinitas"], r: 0},
+            {p: "Resuelve: x² - x - 6 = 0", o: ["x = 3, x = -2", "x = -3, x = 2", "x = 6, x = -1", "x = 1, x = -6"], r: 0},
+            {p: "En la fórmula general, ¿qué determina el discriminante?", o: ["El número de soluciones", "El valor de x", "La factorización", "El vértice"], r: 0}
+        ],
+        "Teorema de Pitágoras": [
+            {p: "En un triángulo rectángulo con catetos 3 y 4, ¿cuánto mide la hipotenusa?", o: ["5", "7", "6", "12"], r: 0},
+            {p: "Si la hipotenusa es 13 y un cateto es 5, ¿cuánto mide el otro cateto?", o: ["12", "8", "18", "10"], r: 0},
+            {p: "¿Cuál es la fórmula del Teorema de Pitágoras?", o: ["c² = a² + b²", "c = a + b", "c² = a² × b²", "c = a² + b²"], r: 0},
+            {p: "Un triángulo tiene lados 6, 8 y 10. ¿Es rectángulo?", o: ["Sí", "No", "No se puede saber", "Solo si es isósceles"], r: 0},
+            {p: "Si los catetos miden 5 y 12, la hipotenusa mide:", o: ["13", "17", "7", "60"], r: 0}
+        ],
+        "Funciones lineales": [
+            {p: "¿Cuál es la pendiente de y = 3x + 2?", o: ["3", "2", "5", "3x"], r: 0},
+            {p: "¿Dónde cruza el eje Y la recta y = -2x + 7?", o: ["(0, 7)", "(7, 0)", "(0, -2)", "(-2, 7)"], r: 0},
+            {p: "Si m = 0, la recta es:", o: ["Horizontal", "Vertical", "Diagonal", "No existe"], r: 0},
+            {p: "¿Cuál es la pendiente entre (1,2) y (3,6)?", o: ["2", "4", "3", "1"], r: 0},
+            {p: "La ecuación y = -x + 4 tiene pendiente:", o: ["-1", "4", "1", "-4"], r: 0},
+            {p: "Dos rectas paralelas tienen:", o: ["La misma pendiente", "Pendientes opuestas", "Pendiente 0", "Se cruzan"], r: 0}
+        ],
+        "Trigonometría": [
+            {p: "sen(30°) =", o: ["1/2", "√3/2", "1", "√2/2"], r: 0},
+            {p: "cos(60°) =", o: ["1/2", "√3/2", "1", "0"], r: 0},
+            {p: "tan(45°) =", o: ["1", "0", "√2", "indefinida"], r: 0},
+            {p: "¿Qué razón es cateto opuesto / hipotenusa?", o: ["Seno", "Coseno", "Tangente", "Cotangente"], r: 0},
+            {p: "¿Qué razón es cateto adyacente / hipotenusa?", o: ["Coseno", "Seno", "Tangente", "Secante"], r: 0},
+            {p: "Si sen(θ) = 3/5, ¿cuánto vale cos(θ)?", o: ["4/5", "3/4", "5/3", "5/4"], r: 0}
+        ]
+    },
+
+    espanol: {
+        "Comprensión lectora": [
+            {p: "¿Qué es una idea principal?", o: ["El mensaje central del texto", "El título", "La primera oración", "El autor"], r: 0},
+            {p: "¿Qué tipo de texto busca convencer al lector?", o: ["Argumentativo", "Narrativo", "Descriptivo", "Expositivo"], r: 0},
+            {p: "Las ideas secundarias sirven para:", o: ["Apoyar la idea principal", "Contradecir el texto", "Adornar el título", "Resumir"], r: 0},
+            {p: "Inferir significa:", o: ["Deducir información no explícita", "Copiar el texto", "Resumir", "Leer en voz alta"], r: 0},
+            {p: "El contexto de una palabra ayuda a:", o: ["Entender su significado", "Encontrar sinónimos", "Conjugar verbos", "Identificar al autor"], r: 0},
+            {p: "¿Qué es una paráfrasis?", o: ["Decir lo mismo con otras palabras", "Copiar textualmente", "Resumir en una oración", "Traducir a otro idioma"], r: 0}
+        ],
+        "Ortografía y acentuación": [
+            {p: "¿Cuál palabra es aguda con acento?", o: ["canción", "árbol", "lápiz", "música"], r: 0},
+            {p: "Las palabras graves se acentúan cuando:", o: ["No terminan en n, s o vocal", "Terminan en vocal", "Siempre se acentúan", "Tienen dos sílabas"], r: 0},
+            {p: "¿Cuál es una palabra esdrújula?", o: ["plátano", "cantar", "reloj", "pared"], r: 0},
+            {p: "Se escribe con 'b':", o: ["Escribir", "Hervir", "Vivir", "Servir"], r: 0},
+            {p: "¿Cuándo se usa 'ahí'?", o: ["Para indicar lugar", "Para el verbo haber", "Como interjección", "Para indicar posesión"], r: 0},
+            {p: "Se usa tilde diacrítica en:", o: ["él (pronombre)", "el (artículo)", "un (artículo)", "los (artículo)"], r: 0},
+            {p: "¿Cuál oración tiene correcta ortografía?", o: ["Él quiere ir a su casa", "El quiere hir a su casa", "Él quiere hir a su casa", "El quiere ir a su casa"], r: 0}
+        ],
+        "Tipos de texto": [
+            {p: "Un texto narrativo se caracteriza por:", o: ["Contar una historia", "Dar instrucciones", "Describir lugares", "Presentar datos"], r: 0},
+            {p: "¿Qué tipo de texto es una receta de cocina?", o: ["Instructivo", "Narrativo", "Argumentativo", "Poético"], r: 0},
+            {p: "Un texto expositivo busca:", o: ["Informar sobre un tema", "Entretener al lector", "Convencer", "Narrar hechos"], r: 0},
+            {p: "¿Cuál es un ejemplo de texto argumentativo?", o: ["Un artículo de opinión", "Un cuento", "Una descripción", "Un diccionario"], r: 0},
+            {p: "La estructura de un cuento incluye:", o: ["Inicio, desarrollo y desenlace", "Introducción y bibliografía", "Tesis y argumentos", "Ingredientes y pasos"], r: 0}
+        ],
+        "Análisis literario": [
+            {p: "¿Qué es el narrador omnisciente?", o: ["Sabe todo sobre los personajes", "Es un personaje", "No sabe nada", "Es el autor"], r: 0},
+            {p: "Una metáfora es:", o: ["Comparación sin 'como'", "Exageración", "Repetición", "Pregunta sin respuesta"], r: 0},
+            {p: "¿Qué es el clímax de una historia?", o: ["El punto de mayor tensión", "El final", "El inicio", "La moraleja"], r: 0},
+            {p: "El ambiente de un cuento se refiere a:", o: ["Lugar y tiempo donde ocurre", "Los personajes", "El narrador", "El conflicto"], r: 0},
+            {p: "Un personaje antagonista es quien:", o: ["Se opone al protagonista", "Cuenta la historia", "Ayuda al héroe", "Narra en primera persona"], r: 0},
+            {p: "¿Qué es una hipérbole?", o: ["Una exageración", "Una comparación", "Una contradicción", "Una repetición"], r: 0}
+        ],
+        "Textos argumentativos": [
+            {p: "La tesis en un texto argumentativo es:", o: ["La postura del autor", "Un resumen", "Una pregunta", "La conclusión"], r: 0},
+            {p: "Un argumento válido debe ser:", o: ["Lógico y con evidencia", "Largo y repetitivo", "Emocional", "Breve"], r: 0},
+            {p: "Un contraargumento sirve para:", o: ["Refutar la posición contraria", "Apoyar tu tesis", "Resumir el texto", "Concluir"], r: 0},
+            {p: "¿Cuál es un conector de causa?", o: ["Porque", "Sin embargo", "Además", "Finalmente"], r: 0},
+            {p: "La conclusión de un texto argumentativo debe:", o: ["Reforzar la tesis", "Agregar nuevos argumentos", "Contradecirse", "Ser una pregunta"], r: 0}
+        ]
+    },
+
+    ciencias: {
+        "Célula y sus funciones": [
+            {p: "¿Cuál es la unidad básica de la vida?", o: ["La célula", "El átomo", "El tejido", "El órgano"], r: 0},
+            {p: "¿Qué organelo realiza la fotosíntesis?", o: ["Cloroplasto", "Mitocondria", "Ribosoma", "Núcleo"], r: 0},
+            {p: "El ADN se encuentra en:", o: ["El núcleo", "El citoplasma", "La membrana", "El ribosoma"], r: 0},
+            {p: "¿Qué diferencia a una célula animal de una vegetal?", o: ["La pared celular", "El núcleo", "La membrana", "El citoplasma"], r: 0},
+            {p: "La mitocondria se encarga de:", o: ["Producir energía (ATP)", "La digestión celular", "Almacenar agua", "Producir proteínas"], r: 0},
+            {p: "La mitosis produce:", o: ["2 células idénticas", "4 células diferentes", "1 célula grande", "Espermatozoides"], r: 0}
+        ],
+        "Tabla periódica": [
+            {p: "¿Cuál es el símbolo del Oxígeno?", o: ["O", "Ox", "Og", "Os"], r: 0},
+            {p: "Los metales se encuentran generalmente a la:", o: ["Izquierda de la tabla", "Derecha de la tabla", "Arriba", "En el centro"], r: 0},
+            {p: "¿Qué indica el número atómico?", o: ["Protones en el núcleo", "Peso del átomo", "Electrones libres", "Neutrones"], r: 0},
+            {p: "Los gases nobles se caracterizan por:", o: ["Ser muy estables", "Ser muy reactivos", "Ser metales", "Ser líquidos"], r: 0},
+            {p: "El Hidrógeno tiene número atómico:", o: ["1", "2", "0", "8"], r: 0},
+            {p: "¿Cuántos electrones tiene el Carbono?", o: ["6", "12", "4", "8"], r: 0}
+        ],
+        "Reacciones químicas": [
+            {p: "En una reacción química se conserva:", o: ["La masa", "El volumen siempre", "El color", "La temperatura"], r: 0},
+            {p: "Los reactivos están:", o: ["Antes de la flecha", "Después de la flecha", "Arriba", "Abajo"], r: 0},
+            {p: "¿Qué tipo de reacción es: A + B → AB?", o: ["Síntesis", "Descomposición", "Sustitución", "Combustión"], r: 0},
+            {p: "Balancear una ecuación significa:", o: ["Igualar átomos en ambos lados", "Agregar más reactivos", "Eliminar productos", "Cambiar la fórmula"], r: 0},
+            {p: "La oxidación implica:", o: ["Pérdida de electrones", "Ganancia de electrones", "Pérdida de protones", "Ganancia de neutrones"], r: 0}
+        ],
+        "Leyes de Newton": [
+            {p: "La Primera Ley de Newton se llama:", o: ["Ley de inercia", "Ley de acción y reacción", "Ley de gravedad", "Ley de fuerza"], r: 0},
+            {p: "F = m × a corresponde a la:", o: ["Segunda Ley de Newton", "Primera Ley", "Tercera Ley", "Ley de Hooke"], r: 0},
+            {p: "La Tercera Ley establece que:", o: ["A toda acción hay una reacción igual y opuesta", "F = ma", "Un cuerpo en reposo permanece en reposo", "La gravedad es constante"], r: 0},
+            {p: "Si aplicas 10 N a un objeto de 2 kg, su aceleración es:", o: ["5 m/s²", "20 m/s²", "10 m/s²", "12 m/s²"], r: 0},
+            {p: "La unidad de fuerza en el SI es:", o: ["Newton (N)", "Kilogramo (kg)", "Metro (m)", "Julio (J)"], r: 0},
+            {p: "La inercia depende de:", o: ["La masa del objeto", "Su velocidad", "Su color", "Su temperatura"], r: 0}
+        ],
+        "Electricidad": [
+            {p: "La unidad de corriente eléctrica es:", o: ["Ampere (A)", "Volt (V)", "Ohm (Ω)", "Watt (W)"], r: 0},
+            {p: "La Ley de Ohm establece:", o: ["V = I × R", "V = I / R", "V = I + R", "V = R / I"], r: 0},
+            {p: "¿Qué partícula lleva la corriente eléctrica?", o: ["Electrón", "Protón", "Neutrón", "Fotón"], r: 0},
+            {p: "Un material conductor permite:", o: ["El paso de corriente", "Bloquear electricidad", "Generar luz", "Almacenar calor"], r: 0},
+            {p: "La resistencia se mide en:", o: ["Ohms (Ω)", "Amperes (A)", "Volts (V)", "Watts (W)"], r: 0}
+        ]
+    },
+
+    historia: {
+        "Independencia de México": [
+            {p: "¿En qué año inició la Independencia de México?", o: ["1810", "1821", "1800", "1910"], r: 0},
+            {p: "¿Quién dio el Grito de Dolores?", o: ["Miguel Hidalgo", "José María Morelos", "Agustín de Iturbide", "Benito Juárez"], r: 0},
+            {p: "¿En qué año se consumó la Independencia?", o: ["1821", "1810", "1824", "1910"], r: 0},
+            {p: "Los Sentimientos de la Nación fueron escritos por:", o: ["José María Morelos", "Miguel Hidalgo", "Vicente Guerrero", "Guadalupe Victoria"], r: 0},
+            {p: "El Plan de Iguala fue propuesto por:", o: ["Agustín de Iturbide", "Miguel Hidalgo", "Morelos", "Allende"], r: 0},
+            {p: "¿Cuál fue la primera bandera del Ejército Insurgente?", o: ["La Virgen de Guadalupe", "El águila y la serpiente", "Tres colores", "Una estrella"], r: 0}
+        ],
+        "Revolución Mexicana": [
+            {p: "¿En qué año inició la Revolución Mexicana?", o: ["1910", "1810", "1920", "1900"], r: 0},
+            {p: "¿Quién proclamó el Plan de San Luis?", o: ["Francisco I. Madero", "Porfirio Díaz", "Emiliano Zapata", "Pancho Villa"], r: 0},
+            {p: "El lema 'Tierra y Libertad' es de:", o: ["Emiliano Zapata", "Pancho Villa", "Madero", "Carranza"], r: 0},
+            {p: "La Constitución de 1917 se promulgó en:", o: ["Querétaro", "Ciudad de México", "Veracruz", "Chihuahua"], r: 0},
+            {p: "¿Quién fue presidente durante 30 años (Porfiriato)?", o: ["Porfirio Díaz", "Benito Juárez", "Madero", "Carranza"], r: 0},
+            {p: "El artículo 3° constitucional habla de:", o: ["Educación", "Trabajo", "Tierra", "Religión"], r: 0}
+        ],
+        "Primera Guerra Mundial": [
+            {p: "¿En qué años fue la Primera Guerra Mundial?", o: ["1914-1918", "1939-1945", "1910-1920", "1900-1905"], r: 0},
+            {p: "¿Qué evento detonó la guerra?", o: ["Asesinato del Archiduque Francisco Fernando", "Invasión de Polonia", "Revolución Rusa", "Hundimiento del Titanic"], r: 0},
+            {p: "¿Cuáles eran las potencias de la Triple Alianza?", o: ["Alemania, Austria-Hungría, Italia", "Francia, Inglaterra, Rusia", "USA, Francia, Inglaterra", "Japón, China, Rusia"], r: 0},
+            {p: "El Tratado de Versalles puso fin a:", o: ["La Primera Guerra Mundial", "La Segunda Guerra", "La Guerra Fría", "La Revolución Francesa"], r: 0},
+            {p: "¿Qué país entró tarde a la guerra del lado aliado?", o: ["Estados Unidos", "Rusia", "Italia", "Japón"], r: 0}
+        ],
+        "Segunda Guerra Mundial": [
+            {p: "¿En qué años fue la Segunda Guerra Mundial?", o: ["1939-1945", "1914-1918", "1950-1955", "1929-1935"], r: 0},
+            {p: "¿Quién fue el líder nazi de Alemania?", o: ["Adolf Hitler", "Mussolini", "Stalin", "Churchill"], r: 0},
+            {p: "¿Qué evento inició la guerra?", o: ["Invasión de Polonia", "Bombardeo de Pearl Harbor", "Caída del Muro de Berlín", "Tratado de Versalles"], r: 0},
+            {p: "El Holocausto fue:", o: ["Genocidio contra judíos y otros grupos", "Una batalla", "Un tratado de paz", "Una revolución"], r: 0},
+            {p: "¿Qué países formaron el Eje?", o: ["Alemania, Italia, Japón", "USA, Francia, Inglaterra", "Rusia, China, India", "España, Portugal, Francia"], r: 0},
+            {p: "¿Dónde se lanzaron las bombas atómicas?", o: ["Hiroshima y Nagasaki", "Tokio y Osaka", "Berlín y Múnich", "Londres y París"], r: 0}
+        ]
+    },
+
+    ingles: {
+        "Verb to be": [
+            {p: "Complete: She ___ a student.", o: ["is", "am", "are", "be"], r: 0},
+            {p: "Complete: They ___ happy.", o: ["are", "is", "am", "be"], r: 0},
+            {p: "Complete: I ___ from Mexico.", o: ["am", "is", "are", "be"], r: 0},
+            {p: "Negative form: He ___ not tired.", o: ["is", "am", "are", "do"], r: 0},
+            {p: "Question form: ___ you a teacher?", o: ["Are", "Is", "Am", "Do"], r: 0},
+            {p: "Complete: We ___ in the classroom.", o: ["are", "is", "am", "be"], r: 0}
+        ],
+        "Present simple": [
+            {p: "Complete: She ___ to school every day.", o: ["goes", "go", "going", "gone"], r: 0},
+            {p: "Complete: They ___ English on Mondays.", o: ["study", "studies", "studying", "studied"], r: 0},
+            {p: "Negative: He ___ like pizza.", o: ["doesn't", "don't", "isn't", "wasn't"], r: 0},
+            {p: "Question: ___ you play soccer?", o: ["Do", "Does", "Are", "Is"], r: 0},
+            {p: "Complete: My mom ___ breakfast at 7 AM.", o: ["makes", "make", "making", "made"], r: 0},
+            {p: "Complete: The cat ___ on the sofa.", o: ["sleeps", "sleep", "sleeping", "slept"], r: 0}
+        ],
+        "Past simple": [
+            {p: "Past of 'go':", o: ["went", "goed", "gone", "going"], r: 0},
+            {p: "Past of 'eat':", o: ["ate", "eated", "eaten", "eating"], r: 0},
+            {p: "Complete: She ___ a book yesterday.", o: ["read", "readed", "reading", "reads"], r: 0},
+            {p: "Negative: I ___ watch TV last night.", o: ["didn't", "don't", "doesn't", "wasn't"], r: 0},
+            {p: "Past of 'have':", o: ["had", "haved", "has", "having"], r: 0},
+            {p: "Question: ___ you study for the test?", o: ["Did", "Do", "Does", "Were"], r: 0},
+            {p: "Past of 'buy':", o: ["bought", "buyed", "buys", "buying"], r: 0}
+        ],
+        "Present perfect": [
+            {p: "Complete: I ___ never been to Paris.", o: ["have", "has", "had", "did"], r: 0},
+            {p: "Complete: She ___ already finished.", o: ["has", "have", "had", "did"], r: 0},
+            {p: "Which is correct?", o: ["I have eaten lunch.", "I have eat lunch.", "I has eaten lunch.", "I have ate lunch."], r: 0},
+            {p: "Complete: They ___ lived here since 2010.", o: ["have", "has", "had", "are"], r: 0},
+            {p: "Past participle of 'write':", o: ["written", "wrote", "writed", "writing"], r: 0},
+            {p: "Complete: He has ___ three books this year.", o: ["read", "readed", "reading", "reads"], r: 0}
+        ],
+        "Conditionals": [
+            {p: "First conditional: If it rains, I ___ an umbrella.", o: ["will take", "would take", "took", "take"], r: 0},
+            {p: "Second conditional: If I ___ rich, I would travel.", o: ["were", "am", "will be", "was being"], r: 0},
+            {p: "Complete: If you study, you ___ pass.", o: ["will", "would", "could have", "might have"], r: 0},
+            {p: "Zero conditional: If you heat water, it ___.", o: ["boils", "will boil", "would boil", "boiled"], r: 0},
+            {p: "Complete: If I had time, I ___ help you.", o: ["would", "will", "can", "am going to"], r: 0}
+        ]
+    }
+};
+
+
+// ============ FUNCIONES DE NAVEGACIÓN ============
+function showSection(name) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById('sec-' + name).classList.add('active');
+    document.getElementById('nav-' + name).classList.add('active');
+}
+
+function updateTemas() {
+    const materia = document.getElementById('gen-materia').value;
+    const grado = document.getElementById('gen-grado').value;
+    const select = document.getElementById('gen-tema');
+    select.innerHTML = '';
+    const temasArr = temas[materia]?.[grado] || [];
+    temasArr.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t;
+        opt.textContent = t;
+        select.appendChild(opt);
+    });
+}
+
+function updateHojaTemas() {
+    const materia = document.getElementById('hoja-materia').value;
+    const grado = document.getElementById('hoja-grado').value;
+    const select = document.getElementById('hoja-tema');
+    select.innerHTML = '';
+    const temasArr = temas[materia]?.[grado] || [];
+    temasArr.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t;
+        opt.textContent = t;
+        select.appendChild(opt);
+    });
+}
+
+// ============ GENERADOR DE EJERCICIOS ============
+function generarEjercicios() {
+    const materia = document.getElementById('gen-materia').value;
+    const tema = document.getElementById('gen-tema').value;
+    const cantidad = parseInt(document.getElementById('gen-cantidad').value);
+    const grado = document.getElementById('gen-grado').value;
+    
+    let ejercicios = obtenerEjercicios(materia, tema, cantidad);
+    
+    let html = `<div class="card"><h3>📝 Ejercicios: ${tema}</h3><p class="tag">${materia} - ${grado}° Secundaria</p><br><br>`;
+    
+    ejercicios.forEach((ej, i) => {
+        html += `<div class="exercise"><h4>${i+1}. ${ej.p}</h4><div class="options">`;
+        ej.o.forEach((op, j) => {
+            html += `<label><input type="radio" name="ej-${i}" value="${j}" onchange="verificarRespuesta(this, ${ej.r})"> ${String.fromCharCode(65+j)}) ${op}</label>`;
+        });
+        html += `</div></div>`;
+    });
+    
+    html += `<br><button class="btn btn-success" onclick="mostrarTodasRespuestas()">✅ Ver todas las respuestas</button></div>`;
+    document.getElementById('ejercicios-output').innerHTML = html;
+}
+
+function obtenerEjercicios(materia, tema, cantidad) {
+    let banco = ejerciciosDB[materia]?.[tema] || [];
+    if (banco.length === 0) {
+        banco = generarEjerciciosAleatorios(materia, tema, cantidad);
+    }
+    let shuffled = [...banco].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, Math.min(cantidad, shuffled.length));
+}
+
+function generarEjerciciosAleatorios(materia, tema, cantidad) {
+    // Genera ejercicios básicos si no hay en el banco
+    let ejercicios = [];
+    for (let i = 0; i < cantidad; i++) {
+        if (materia === 'matematicas') {
+            let a = Math.floor(Math.random() * 20) + 1;
+            let b = Math.floor(Math.random() * 20) + 1;
+            let r = a + b;
+            ejercicios.push({p: `Resuelve: ${a} + ${b} =`, o: [`${r}`, `${r+1}`, `${r-1}`, `${r+2}`], r: 0});
+        } else {
+            ejercicios.push({p: `Pregunta ${i+1} sobre ${tema}`, o: ["Opción A", "Opción B", "Opción C", "Opción D"], r: 0});
+        }
+    }
+    return ejercicios;
+}
+
+function verificarRespuesta(input, correcta) {
+    const label = input.parentElement;
+    const options = label.parentElement;
+    options.querySelectorAll('label').forEach(l => { l.classList.remove('correct', 'incorrect'); });
+    if (parseInt(input.value) === correcta) {
+        label.classList.add('correct');
+    } else {
+        label.classList.add('incorrect');
+        options.querySelectorAll('label')[correcta].classList.add('correct');
+    }
+}
+
+function mostrarTodasRespuestas() {
+    document.querySelectorAll('.options').forEach(opt => {
+        const inputs = opt.querySelectorAll('input');
+        inputs.forEach(inp => {
+            const correcta = parseInt(inp.getAttribute('onchange').match(/(\d+)\)$/)?.[1] || 0);
+        });
+        const labels = opt.querySelectorAll('label');
+        if (labels[0]) labels[0].classList.add('correct');
+    });
+}
+
+
+// ============ EXAMEN DIAGNÓSTICO ============
+let diagPreguntas = [];
+let diagActual = 0;
+let diagRespuestas = {};
+
+function iniciarDiagnostico() {
+    const materia = document.getElementById('diag-materia').value;
+    const grado = document.getElementById('diag-grado').value;
+    const temasMateria = temas[materia]?.[grado] || [];
+    
+    diagPreguntas = [];
+    diagActual = 0;
+    diagRespuestas = {};
+    
+    // Tomar 2-3 preguntas de cada tema
+    temasMateria.forEach(tema => {
+        let banco = ejerciciosDB[materia]?.[tema] || [];
+        let seleccion = [...banco].sort(() => Math.random() - 0.5).slice(0, 2);
+        seleccion.forEach(p => {
+            diagPreguntas.push({...p, tema: tema});
+        });
+    });
+    
+    if (diagPreguntas.length === 0) {
+        document.getElementById('diagnostico-output').innerHTML = '<div class="card"><p>No hay preguntas disponibles para esta combinación.</p></div>';
+        return;
+    }
+    
+    diagPreguntas = diagPreguntas.sort(() => Math.random() - 0.5);
+    mostrarPreguntaDiag();
+}
+
+function mostrarPreguntaDiag() {
+    if (diagActual >= diagPreguntas.length) {
+        mostrarResultadoDiag();
+        return;
+    }
+    
+    const p = diagPreguntas[diagActual];
+    const progreso = ((diagActual) / diagPreguntas.length * 100).toFixed(0);
+    
+    let html = `<div class="card">
+        <div class="progress-bar"><div class="fill" style="width: ${progreso}%"></div></div>
+        <p><strong>Pregunta ${diagActual + 1} de ${diagPreguntas.length}</strong> <span class="tag">${p.tema}</span></p><br>
+        <div class="exercise"><h4>${p.p}</h4><div class="options">`;
+    
+    p.o.forEach((op, j) => {
+        html += `<label onclick="responderDiag(${j})"><input type="radio" name="diag-q"> ${String.fromCharCode(65+j)}) ${op}</label>`;
+    });
+    
+    html += `</div></div></div>`;
+    document.getElementById('diagnostico-output').innerHTML = html;
+}
+
+function responderDiag(respuesta) {
+    const p = diagPreguntas[diagActual];
+    if (!diagRespuestas[p.tema]) diagRespuestas[p.tema] = {correctas: 0, total: 0};
+    diagRespuestas[p.tema].total++;
+    if (respuesta === p.r) diagRespuestas[p.tema].correctas++;
+    diagActual++;
+    setTimeout(mostrarPreguntaDiag, 300);
+}
+
+function mostrarResultadoDiag() {
+    let html = `<div class="card"><h2>📊 Resultado del Diagnóstico</h2><br>`;
+    let totalCorrectas = 0, totalPreguntas = 0;
+    
+    let fortalezas = [], debilidades = [];
+    
+    Object.keys(diagRespuestas).forEach(tema => {
+        const d = diagRespuestas[tema];
+        const porcentaje = (d.correctas / d.total * 100).toFixed(0);
+        totalCorrectas += d.correctas;
+        totalPreguntas += d.total;
+        
+        const color = porcentaje >= 70 ? '#27ae60' : porcentaje >= 50 ? '#f39c12' : '#e74c3c';
+        const emoji = porcentaje >= 70 ? '✅' : porcentaje >= 50 ? '⚠️' : '❌';
+        
+        html += `<div style="margin: 8px 0; padding: 10px; background: ${color}15; border-left: 4px solid ${color}; border-radius: 0 8px 8px 0;">
+            <strong>${emoji} ${tema}</strong>: ${d.correctas}/${d.total} (${porcentaje}%)
+            <div class="progress-bar"><div class="fill" style="width: ${porcentaje}%; background: ${color}"></div></div>
+        </div>`;
+        
+        if (porcentaje >= 70) fortalezas.push(tema);
+        else debilidades.push(tema);
+    });
+    
+    const porcentajeTotal = (totalCorrectas / totalPreguntas * 100).toFixed(0);
+    html += `<br><div class="score">Resultado General: ${totalCorrectas}/${totalPreguntas} (${porcentajeTotal}%)</div>`;
+    
+    html += `<br><h3>💪 Fortalezas:</h3><ul>`;
+    fortalezas.forEach(f => html += `<li style="color: #27ae60">${f}</li>`);
+    if (fortalezas.length === 0) html += `<li>Necesita refuerzo general</li>`;
+    html += `</ul>`;
+    
+    html += `<h3>📚 Necesita refuerzo en:</h3><ul>`;
+    debilidades.forEach(d => html += `<li style="color: #e74c3c"><strong>${d}</strong></li>`);
+    if (debilidades.length === 0) html += `<li>¡Excelente! Domina todos los temas</li>`;
+    html += `</ul>`;
+    
+    html += `<br><button class="btn" onclick="iniciarDiagnostico()">🔄 Repetir Diagnóstico</button>
+             <button class="btn btn-success" onclick="window.print()">🖨️ Imprimir Reporte</button></div>`;
+    
+    document.getElementById('diagnostico-output').innerHTML = html;
+}
+
+
+// ============ SIMULADOR DE EXAMEN ============
+let simPreguntas = [];
+let simActual = 0;
+let simRespuestas = [];
+let simTimer = null;
+let simTiempoRestante = 0;
+
+function iniciarSimulador() {
+    const materia = document.getElementById('sim-materia').value;
+    const grado = document.getElementById('sim-grado').value;
+    const tiempo = parseInt(document.getElementById('sim-tiempo').value);
+    const temasMateria = temas[materia]?.[grado] || [];
+    
+    simPreguntas = [];
+    simActual = 0;
+    simRespuestas = [];
+    
+    // 20 preguntas para el examen
+    temasMateria.forEach(tema => {
+        let banco = ejerciciosDB[materia]?.[tema] || [];
+        let seleccion = [...banco].sort(() => Math.random() - 0.5).slice(0, 3);
+        seleccion.forEach(p => simPreguntas.push({...p, tema: tema}));
+    });
+    
+    simPreguntas = simPreguntas.sort(() => Math.random() - 0.5).slice(0, 20);
+    
+    if (simPreguntas.length === 0) {
+        document.getElementById('simulador-output').innerHTML = '<div class="card"><p>No hay preguntas disponibles.</p></div>';
+        return;
+    }
+    
+    simRespuestas = new Array(simPreguntas.length).fill(-1);
+    simTiempoRestante = tiempo * 60;
+    
+    simTimer = setInterval(() => {
+        simTiempoRestante--;
+        actualizarTimer();
+        if (simTiempoRestante <= 0) {
+            clearInterval(simTimer);
+            finalizarSimulador();
+        }
+    }, 1000);
+    
+    mostrarPreguntaSim();
+}
+
+function actualizarTimer() {
+    const min = Math.floor(simTiempoRestante / 60);
+    const seg = simTiempoRestante % 60;
+    const timerEl = document.getElementById('sim-timer');
+    if (timerEl) {
+        timerEl.textContent = `⏱️ ${min.toString().padStart(2,'0')}:${seg.toString().padStart(2,'0')}`;
+        if (simTiempoRestante < 300) timerEl.style.color = '#e74c3c';
+    }
+}
+
+function mostrarPreguntaSim() {
+    const p = simPreguntas[simActual];
+    const progreso = ((simActual) / simPreguntas.length * 100).toFixed(0);
+    
+    let html = `<div class="card">
+        <div class="timer" id="sim-timer">⏱️ Cargando...</div>
+        <div class="progress-bar"><div class="fill" style="width: ${progreso}%"></div></div>
+        <p><strong>Pregunta ${simActual + 1} de ${simPreguntas.length}</strong> <span class="tag">${p.tema}</span></p><br>
+        <div class="exercise"><h4>${p.p}</h4><div class="options">`;
+    
+    p.o.forEach((op, j) => {
+        const checked = simRespuestas[simActual] === j ? 'checked' : '';
+        html += `<label><input type="radio" name="sim-q" value="${j}" ${checked} onchange="simSeleccionar(${j})"> ${String.fromCharCode(65+j)}) ${op}</label>`;
+    });
+    
+    html += `</div></div><br><div style="display:flex; justify-content:space-between;">`;
+    
+    if (simActual > 0) html += `<button class="btn" onclick="simAnterior()">⬅️ Anterior</button>`;
+    else html += `<span></span>`;
+    
+    if (simActual < simPreguntas.length - 1) html += `<button class="btn" onclick="simSiguiente()">Siguiente ➡️</button>`;
+    else html += `<button class="btn btn-success" onclick="finalizarSimulador()">✅ Terminar Examen</button>`;
+    
+    html += `</div></div>`;
+    document.getElementById('simulador-output').innerHTML = html;
+    actualizarTimer();
+}
+
+function simSeleccionar(valor) { simRespuestas[simActual] = valor; }
+function simSiguiente() { simActual++; mostrarPreguntaSim(); }
+function simAnterior() { simActual--; mostrarPreguntaSim(); }
+
+function finalizarSimulador() {
+    clearInterval(simTimer);
+    let correctas = 0;
+    let detalles = '';
+    
+    simPreguntas.forEach((p, i) => {
+        const esCorrecta = simRespuestas[i] === p.r;
+        if (esCorrecta) correctas++;
+        const emoji = esCorrecta ? '✅' : simRespuestas[i] === -1 ? '⬜' : '❌';
+        detalles += `<div class="exercise">
+            <p>${emoji} <strong>${i+1}. ${p.p}</strong></p>
+            <p>Tu respuesta: <strong>${simRespuestas[i] >= 0 ? p.o[simRespuestas[i]] : 'Sin responder'}</strong></p>
+            ${!esCorrecta ? `<p style="color:#27ae60">Respuesta correcta: <strong>${p.o[p.r]}</strong></p>` : ''}
+        </div>`;
+    });
+    
+    const porcentaje = (correctas / simPreguntas.length * 100).toFixed(0);
+    const aprobado = porcentaje >= 60;
+    
+    let html = `<div class="card">
+        <h2>📋 Resultado del Examen</h2>
+        <div class="score" style="background: ${aprobado ? 'linear-gradient(135deg, #27ae60, #2ecc71)' : 'linear-gradient(135deg, #e74c3c, #c0392b)'}">
+            ${aprobado ? '🎉 ¡APROBADO!' : '📚 NO APROBADO - Necesita más práctica'}<br>
+            <span style="font-size: 1.5em">${correctas}/${simPreguntas.length}</span> (${porcentaje}%)
+        </div>
+        <p>Calificación: <strong>${(correctas/simPreguntas.length * 10).toFixed(1)}</strong> / 10</p>
+        <br><h3>Detalle de respuestas:</h3>${detalles}
+        <br><button class="btn" onclick="iniciarSimulador()">🔄 Intentar de nuevo</button>
+        <button class="btn btn-success" onclick="window.print()">🖨️ Imprimir resultado</button>
+    </div>`;
+    
+    document.getElementById('simulador-output').innerHTML = html;
+}
+
+
+// ============ HOJAS DE TRABAJO ============
+function generarHoja() {
+    const materia = document.getElementById('hoja-materia').value;
+    const tema = document.getElementById('hoja-tema').value;
+    const grado = document.getElementById('hoja-grado').value;
+    
+    let ejercicios = obtenerEjercicios(materia, tema, 10);
+    
+    let html = `<div class="card">
+        <div style="text-align:center; border-bottom: 2px solid #667eea; padding-bottom: 15px; margin-bottom: 15px;">
+            <h2>📄 Hoja de Trabajo</h2>
+            <p><strong>Materia:</strong> ${materia.charAt(0).toUpperCase() + materia.slice(1)} | <strong>Grado:</strong> ${grado}° Secundaria</p>
+            <p><strong>Tema:</strong> ${tema}</p>
+            <p>Nombre: _________________________________ Fecha: _______________</p>
+        </div>
+        
+        <h3>I. Selecciona la respuesta correcta:</h3><br>`;
+    
+    ejercicios.forEach((ej, i) => {
+        html += `<div style="margin-bottom: 15px;">
+            <p><strong>${i+1}. ${ej.p}</strong></p>
+            <div style="margin-left: 20px;">`;
+        ej.o.forEach((op, j) => {
+            html += `<p>○ ${String.fromCharCode(65+j)}) ${op}</p>`;
+        });
+        html += `</div></div>`;
+    });
+    
+    // Sección de respuestas (para el profesor)
+    html += `<br><div style="border-top: 2px dashed #ccc; padding-top: 15px; margin-top: 15px;">
+        <p><strong>🔑 Clave de respuestas (recortar):</strong></p><p>`;
+    ejercicios.forEach((ej, i) => {
+        html += `${i+1}-${String.fromCharCode(65+ej.r)} | `;
+    });
+    html += `</p></div>
+        <br><button class="btn btn-success no-print" onclick="window.print()">🖨️ Imprimir Hoja</button>
+    </div>`;
+    
+    document.getElementById('hojas-output').innerHTML = html;
+}
+
+// ============ INICIALIZACIÓN ============
+document.addEventListener('DOMContentLoaded', () => {
+    updateTemas();
+    updateHojaTemas();
+    
+    // Actualizar temas cuando cambia grado
+    document.getElementById('gen-grado').addEventListener('change', updateTemas);
+    document.getElementById('hoja-grado').addEventListener('change', updateHojaTemas);
+});
+</script>
+
+</body>
+</html>
